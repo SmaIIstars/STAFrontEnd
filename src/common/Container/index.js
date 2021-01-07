@@ -5,7 +5,9 @@ import CHeader from "./cpn/Header";
 
 const Container = memo((props) => {
   const { isHeader, Header, children } = props;
-  const { leftHeader, midHeader, rightHeader } = Header;
+  if (isHeader) {
+    var { leftHeader = null, midHeader = null, rightHeader = null } = Header;
+  }
 
   return (
     <ContainerWrapper>

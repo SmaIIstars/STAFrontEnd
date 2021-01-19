@@ -1,4 +1,6 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect } from "react";
+
+import { getPersonnelList } from "servers/personnel";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -6,73 +8,49 @@ import { ContainerWrapper } from "./style";
 
 const columns = [
   {
-    title: "Name",
+    title: "姓名",
     dataIndex: "name",
     key: "name",
     width: "30%",
     align: "center",
   },
   {
-    title: "Age",
-    dataIndex: "age",
-    key: "age",
+    title: "学位",
+    dataIndex: "degree",
+    key: "degree",
     width: "20%",
     align: "center",
   },
   {
-    title: "Address",
-    dataIndex: "address",
-    key: "address",
+    title: "学历",
+    dataIndex: "EB",
+    key: "EB",
+    align: "center",
+  },
+  {
+    title: "职称",
+    dataIndex: "title",
+    key: "title",
     align: "center",
   },
 ];
 
-const dataSource = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-  },
-  {
-    key: "2",
-    name: "Joe Black",
-    age: 42,
-    address: "London No. 1 Lake Park",
-  },
-  {
-    key: "3",
-    name: "Jim Green",
-    age: 32,
-    address: "Sidney No. 1 Lake Park",
-  },
-  {
-    key: "4",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-  {
-    key: "5",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-  {
-    key: "6",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-  {
-    key: "7",
-    name: "Jim Red",
-    age: 32,
-    address: "London No. 2 Lake Park",
-  },
-];
-
 const Personnel = memo((props) => {
+  const [personnelList, setPersonnelList] = useState([]);
+  useEffect(() => {
+    getPersonnelList().then((res) => {
+      let { data } = res;
+      setPersonnelList(data.data);
+    });
+  }, []);
+
+  const getDataSource = (dataSource) =>
+    dataSource.map((item) => {
+      return Object.assign(item, { key: item.id });
+    });
+
+  let dataSource = getDataSource(personnelList);
+
   return (
     <Container
       isHeader={true}

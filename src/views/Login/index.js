@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { Form, Input, Button } from "antd";
 
-import LoginContainer from "../../components/LoginContainer";
+import LoginContainer from "components/LoginContainer";
 import { LoginFrame } from "./style";
 
 const formItemLayout = {

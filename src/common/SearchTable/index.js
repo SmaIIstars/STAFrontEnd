@@ -93,7 +93,7 @@ const SearchTable = memo((props) => {
       pagination={{
         pageSize: pageSize,
         pageSizeOptions: [1, 3, 5, 10],
-        total: 7,
+        total: columns.size,
         showSizeChanger: true,
         onShowSizeChange: onShowSizeChange,
       }}

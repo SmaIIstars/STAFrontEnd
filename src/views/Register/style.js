@@ -73,9 +73,8 @@ export const RegisterFrame = styled.div`
       :-webkit-autofill:hover,
       :-webkit-autofill:focus,
       :-webkit-autofill:active {
-        -webkit-transition-delay: 99999s;
-        -webkit-transition: color 99999s ease-out,
-          background-color 99999s ease-out;
+        transition-delay: 99999s;
+        transition: color 99999s ease-out, background-color 99999s ease-out;
       }
     }
   }

@@ -3,6 +3,8 @@ import { Form, Input, Button } from "antd";
 
 import LoginContainer from "components/LoginContainer";
 import { LoginFrame } from "./style";
+import { loginRequest } from "servers/login";
+// import { getPersonnelList } from "../../servers/personnel";
 
 const formItemLayout = {
   labelCol: {
@@ -15,7 +17,10 @@ const formItemLayout = {
 
 const Login = memo((props) => {
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+    const { username, password } = values;
+    loginRequest(username, password).then((res) => {
+      console.log(res);
+    });
   };
 
   return (

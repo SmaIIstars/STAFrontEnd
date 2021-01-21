@@ -1,8 +1,9 @@
 import React, { memo } from "react";
-import { Layout } from "antd";
+import { Layout, Spin } from "antd";
 import { renderRoutes } from "react-router-config";
 import { BrowserRouter, Route } from "react-router-dom";
 import { Switch } from "react-router";
+import { useSelector, shallowEqual } from "react-redux";
 // import { HashRouter } from "react-router-dom";
 
 import { mainRoutes } from "./routes";
@@ -17,6 +18,10 @@ import Register from "./views/Register";
 
 const App = memo(function App(props) {
   const { Content } = Layout;
+  const loading = useSelector(
+    (state) => state.getIn(["app", "loading"]),
+    shallowEqual
+  );
 
   return (
     <BrowserRouter>
@@ -28,14 +33,15 @@ const App = memo(function App(props) {
         <Route exact path="/register">
           <Register />
         </Route>
-
         <MainLayout>
           <Layout className="layoutwrapper">
             <Sider />
             <Layout className="site-layout">
               <Header />
-              <Content>{renderRoutes(mainRoutes)}</Content>
-              <Footer />
+              <Spin spinning={loading} wrapperClassName="page-loading">
+                <Content>{renderRoutes(mainRoutes)}</Content>
+                <Footer />
+              </Spin>
             </Layout>
           </Layout>
         </MainLayout>

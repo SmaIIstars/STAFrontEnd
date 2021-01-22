@@ -6,7 +6,7 @@ import { Switch } from "react-router";
 import { useSelector, shallowEqual } from "react-redux";
 // import { HashRouter } from "react-router-dom";
 
-import { mainRoutes } from "./routes";
+import mainRoutes from "./routes";
 import "assets/local_data.js";
 
 import { MainLayout } from "./style";

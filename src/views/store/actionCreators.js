@@ -1,7 +1,7 @@
 import { CHAGE_LOADING_STATUS } from "./constants";
 
 // changeActions
-const changeLoadingStatus = (status) => ({
+export const changeLoadingStatusAction = (status) => ({
   type: CHAGE_LOADING_STATUS,
   status,
 });

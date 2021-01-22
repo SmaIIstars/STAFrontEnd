@@ -2,9 +2,8 @@ import { Redirect } from "react-router-dom";
 
 import Personnel from "../views/Personnel";
 import Project from "../views/Project";
-import Login from "../views/Login";
 
-export const mainRoutes = [
+const mainRoutes = [
   {
     path: "/",
     exact: true,
@@ -20,10 +19,4 @@ export const mainRoutes = [
   },
 ];
 
-export const otherRoutes = [
-  {
-    path: "/login",
-    exact: true,
-    component: Login,
-  },
-];
+export default mainRoutes;

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
+  position: relative;
   height: 100vh;
 
   background-image: url("https://cdn.jsdelivr.net/gh/SmaIIstars/imgCDN/CDUT/img1.jpg");

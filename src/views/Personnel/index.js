@@ -1,6 +1,7 @@
-import React, { memo, useState, useEffect } from "react";
+import React, { memo, useEffect } from "react";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
 
-import { getPersonnelList } from "servers/personnel";
+import { getPersonnelListAction } from "./store/actionCreatores";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -36,20 +37,26 @@ const columns = [
 ];
 
 const Personnel = memo((props) => {
-  const [personnelList, setPersonnelList] = useState([]);
+  const dispatch = useDispatch();
+  const { userInfo, personnelList } = useSelector((state) => {
+    return {
+      userInfo: state.getIn(["app", "userInfo"]),
+      personnelList: state.getIn(["personnel", "personnelList"]),
+    };
+  }, shallowEqual);
+
   useEffect(() => {
-    getPersonnelList().then((res) => {
-      let { data } = res;
-      setPersonnelList(data.data);
-    });
-  }, []);
+    dispatch(getPersonnelListAction());
+  }, [dispatch]);
 
   const getDataSource = (dataSource) =>
-    dataSource.map((item) => {
-      return Object.assign(item, { key: item.id });
-    });
+    dataSource
+      ? dataSource.map((item) => {
+          return Object.assign(item, { key: item.id });
+        })
+      : null;
 
-  let dataSource = getDataSource(personnelList);
+  const dataSource = getDataSource(personnelList);
 
   return (
     <Container

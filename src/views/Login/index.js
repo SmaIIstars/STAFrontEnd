@@ -1,9 +1,12 @@
 import React, { memo } from "react";
-import { Form, Input, Button } from "antd";
+import { useHistory } from "react-router";
+import { Form, Input, Button, message } from "antd";
+
+import { loginRequest } from "servers/login";
 
 import LoginContainer from "components/LoginContainer";
 import { LoginFrame } from "./style";
-import { loginRequest } from "servers/login";
+
 // import { getPersonnelList } from "../../servers/personnel";
 
 const formItemLayout = {
@@ -16,11 +19,32 @@ const formItemLayout = {
 };
 
 const Login = memo((props) => {
+  const history = useHistory();
+
   const onFinish = (values) => {
     const { username, password } = values;
-    loginRequest(username, password).then((res) => {
-      console.log(res);
-    });
+    loginRequest(username, password)
+      .then((res) => {
+        const { data } = res;
+        // console.log(data);
+        // successful
+        if (data.code === 1001) {
+          message.success("succesful");
+          const { token, name, authority } = data.data;
+          localStorage.setItem("token", token);
+          localStorage.setItem("username", name);
+          localStorage.setItem("authority", authority);
+
+          history.push("/personnel");
+        } else {
+          message.error({
+            content: data.message,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (

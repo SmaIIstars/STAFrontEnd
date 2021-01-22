@@ -1,0 +1,5 @@
+@import "base.css";
+
+.ant-message .ant-message-notice-content {
+  bottom: unset;
+}

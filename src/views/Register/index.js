@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import { Form, Input, Button } from "antd";
-import CrytoJS from "cryto-js";
+import CryptoJS from "crypto-js";
 
 import LoginContainer from "components/LoginContainer";
 import { emailCaptcha } from "servers/register";
@@ -23,6 +23,7 @@ const Register = memo((props) => {
   const [email, setEmail] = useState();
   const [captcha, setCaptcha] = useState();
   const [stamp, setStamp] = useState(0);
+  const [hashCaptcha, setHashCaptcha] = useState("");
 
   const [captchaStatus, setCaptchaStatus] = useState(false);
   const [isCaptchaTimer, setIsCaptchaTimer] = useState(false);
@@ -60,7 +61,7 @@ const Register = memo((props) => {
       const { data } = res;
       console.log(data);
       setStamp(data.time);
-      setCaptcha(data.captcha);
+      setHashCaptcha(data.captcha);
     });
   };
 
@@ -216,9 +217,13 @@ const Register = memo((props) => {
 
               {
                 validator(_, value) {
-                  let val = stamp + value;
-                  console.log(stamp, value);
-                  if (!value || val === value) {
+                  let val = CryptoJS.SHA512(stamp + value).toString(
+                    CryptoJS.enc.Hex
+                  );
+
+                  console.log(hashCaptcha);
+                  console.log(val);
+                  if (!value || val === hashCaptcha) {
                     return Promise.resolve();
                   }
                   return Promise.reject("验证码错误");

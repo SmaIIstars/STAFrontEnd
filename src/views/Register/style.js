@@ -53,7 +53,8 @@ export const RegisterFrame = styled.div`
       }
     }
 
-    > div input,
+    .ant-input-password,
+    input,
     input:hover,
     input:focus {
       width: 100%;
@@ -75,6 +76,18 @@ export const RegisterFrame = styled.div`
       :-webkit-autofill:active {
         transition-delay: 99999s;
         transition: color 99999s ease-out, background-color 99999s ease-out;
+      }
+    }
+
+    .ant-input-password {
+      padding-bottom: 0;
+      padding-top: 0;
+      .ant-input-suffix > span {
+        color: white;
+      }
+
+      > input {
+        border-bottom: none;
       }
     }
   }
@@ -102,5 +115,31 @@ export const RegisterFrame = styled.div`
 
   .enterBut:hover {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.1) inset;
+  }
+`;
+
+export const CaptchaWrapper = styled.div`
+  display: flex;
+  align-items: center;
+
+  button {
+    color: rgba(255, 255, 255, 0.7);
+    background: transparent;
+    margin-left: 10px;
+
+    :hover,
+    :disabled:hover {
+      color: rgba(255, 255, 255, 1);
+      background: transparent;
+      border-color: white;
+    }
+
+    :disabled,
+    :active,
+    :focus {
+      color: rgba(255, 255, 255, 0.7);
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.7);
+    }
   }
 `;

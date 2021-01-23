@@ -25,3 +25,17 @@ export const sider_icons = [
   <PieChartOutlined />,
   <TeamOutlined />,
 ];
+
+// UserDropdown
+export const layout_header_dropdown_items = [
+  {
+    key: "userinfo",
+    title: "基本信息",
+    href: "/personnel",
+  },
+  {
+    key: "signout",
+    title: "注销",
+    href: "/login",
+  },
+];

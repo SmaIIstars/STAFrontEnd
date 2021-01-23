@@ -1,0 +1,1 @@
+export const CAPTCHA_REMAINING_TIME = 5;

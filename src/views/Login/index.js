@@ -7,8 +7,6 @@ import { loginRequest } from "servers/login";
 import LoginContainer from "components/LoginContainer";
 import { LoginFrame } from "./style";
 
-// import { getPersonnelList } from "../../servers/personnel";
-
 const formItemLayout = {
   labelCol: {
     span: 8,

@@ -15,6 +15,7 @@ export const getPersonnelListAction = () => {
   return (dispatch) => {
     getPersonnelList().then((res) => {
       const { data } = res;
+
       dispatch(changePersonnelListAction(data.data));
     });
   };

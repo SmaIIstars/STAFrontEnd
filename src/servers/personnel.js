@@ -1,8 +1,7 @@
 import request from "./request";
-const token = localStorage.getItem("token");
-console.log(token);
 
 export const getPersonnelList = () => {
+  const token = localStorage.getItem("token");
   return request({
     method: "post",
     url: "api/data/personnel",

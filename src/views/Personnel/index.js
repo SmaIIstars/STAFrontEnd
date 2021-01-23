@@ -38,9 +38,8 @@ const columns = [
 
 const Personnel = memo((props) => {
   const dispatch = useDispatch();
-  const { userInfo, personnelList } = useSelector((state) => {
+  const { personnelList } = useSelector((state) => {
     return {
-      userInfo: state.getIn(["app", "userInfo"]),
       personnelList: state.getIn(["personnel", "personnelList"]),
     };
   }, shallowEqual);
@@ -60,7 +59,7 @@ const Personnel = memo((props) => {
 
   return (
     <Container
-      isHeader={true}
+      isHeader={false}
       Header={{
         leftHeader: <div>left</div>,
         midHeader: <div>mid</div>,

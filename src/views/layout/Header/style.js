@@ -5,8 +5,14 @@ export const HeaderWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  .header-title {
+  .header-title,
+  .username {
     color: white;
     font-size: 24px;
+  }
+
+  .username {
+    margin-right: 24px;
+    cursor: default;
   }
 `;

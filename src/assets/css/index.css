@@ -1,5 +1,9 @@
 @import "base.css";
 
-.ant-message .ant-message-notice-content {
+.ant-message .ant-message-notice .ant-message-notice-content {
   bottom: unset;
+}
+
+.ant-message-notice {
+  height: 56px;
 }

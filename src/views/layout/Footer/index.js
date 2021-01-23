@@ -1,11 +1,15 @@
 import React, { memo } from "react";
 import { Layout } from "antd";
 
+import { CopyRight } from "./style";
+
 const Footer = memo((props) => {
   const { Footer } = Layout;
   return (
-    <Footer style={{ textAlign: "center" }}>
-      STA ©2020 Created by Small Stars
+    <Footer>
+      <CopyRight>
+        <span>STA ©2020 Created by Small Stars</span>
+      </CopyRight>
     </Footer>
   );
 });

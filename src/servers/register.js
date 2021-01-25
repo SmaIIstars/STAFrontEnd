@@ -7,3 +7,11 @@ export const emailCaptcha = (data) => {
     data,
   });
 };
+
+export const registerUser = (data) => {
+  return request({
+    method: "POST",
+    url: "api/data/register",
+    data,
+  });
+};

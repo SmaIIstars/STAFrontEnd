@@ -59,7 +59,6 @@ const Register = memo((props) => {
     setTimer();
     emailCaptcha({ username, email }).then((res) => {
       const { data } = res;
-      console.log(data);
       setStamp(data.time);
       setHashCaptcha(data.captcha);
     });
@@ -105,7 +104,7 @@ const Register = memo((props) => {
           className="form"
         >
           <Form.Item
-            rules={[{ required: true, message: "Please input Username!" }]}
+            rules={[{ required: true, message: "请输入用户名!" }]}
             name="username"
             label={
               <div>
@@ -124,7 +123,7 @@ const Register = memo((props) => {
           </Form.Item>
 
           <Form.Item
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[{ required: true, message: "请输入密码!" }]}
             name="password"
             label={
               <div>
@@ -145,15 +144,13 @@ const Register = memo((props) => {
 
           <Form.Item
             rules={[
-              { required: true, message: "Please input your Password again!" },
+              { required: true, message: "请再次输入密码!" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(
-                    "The two passwords that you entered do not match!"
-                  );
+                  return Promise.reject("两次密码不匹配!");
                 },
               }),
             ]}
@@ -175,7 +172,7 @@ const Register = memo((props) => {
 
           <Form.Item
             rules={[
-              { required: true, message: "Please input Email!" },
+              { required: true, message: "请输入邮箱!" },
               {
                 validator(_, value) {
                   const email_reg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -190,7 +187,7 @@ const Register = memo((props) => {
                   }
 
                   setCaptchaStatus(false);
-                  return Promise.reject('Validation error on field "email"');
+                  return Promise.reject("邮箱格式错误!");
                 },
               },
             ]}
@@ -213,7 +210,7 @@ const Register = memo((props) => {
 
           <Form.Item
             rules={[
-              { required: true, message: "请输入验证码" },
+              { required: true, message: "请输入验证码!" },
 
               {
                 validator(_, value) {
@@ -221,12 +218,10 @@ const Register = memo((props) => {
                     CryptoJS.enc.Hex
                   );
 
-                  console.log(hashCaptcha);
-                  console.log(val);
                   if (!value || val === hashCaptcha) {
                     return Promise.resolve();
                   }
-                  return Promise.reject("验证码错误");
+                  return Promise.reject("验证码错误!");
                 },
               },
             ]}

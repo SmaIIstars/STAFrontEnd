@@ -1,11 +1,11 @@
 import request from "./request";
 
-export const loginRequest = (username, password) => {
+export const loginRequest = (email, password) => {
   return request({
     method: "post",
     url: "api/data/login",
     data: {
-      username,
+      email,
       password,
     },
   });

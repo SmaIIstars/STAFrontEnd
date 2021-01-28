@@ -20,17 +20,16 @@ const Login = memo((props) => {
   const history = useHistory();
 
   const onFinish = (values) => {
-    const { username, password } = values;
-    loginRequest(username, password)
+    const { email, password } = values;
+    loginRequest(email, password)
       .then((res) => {
         const { data } = res;
-        // console.log(data);
         // successful
         if (data.code === 1001) {
           message.success("succesful");
-          const { token, name, authority } = data.data;
+          const { token, username, authority } = data.data;
           localStorage.setItem("token", token);
-          localStorage.setItem("username", name);
+          localStorage.setItem("username", username);
           localStorage.setItem("authority", authority);
 
           history.push("/personnel");
@@ -64,21 +63,21 @@ const Login = memo((props) => {
           className="form"
         >
           <Form.Item
-            rules={[{ required: true, message: "Please input your Username!" }]}
-            name="username"
+            rules={[{ required: true, message: "请输入邮箱!" }]}
+            name="email"
             label={
               <div>
                 <i className="fa fa-user" aria-hidden="true"></i>
-                <span>用户名</span>
+                <span>邮箱</span>
               </div>
             }
             className="form-label"
           >
-            <Input placeholder="Username" />
+            <Input placeholder="email" />
           </Form.Item>
 
           <Form.Item
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[{ required: true, message: "请输入密码!" }]}
             name="password"
             label={
               <div>

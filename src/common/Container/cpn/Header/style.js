@@ -4,7 +4,8 @@ export const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 32px;
+  height: 48px;
+  background-color: #fff;
 
   .left-header {
   }

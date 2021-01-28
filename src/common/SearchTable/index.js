@@ -2,6 +2,8 @@ import React, { memo, useState } from "react";
 import { Table, Input, Button, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
+import { TableWrapper } from "./style";
+
 const SearchTable = memo((props) => {
   const { columns, dataSource, bordered = false } = props;
   const [searchText, setSearchText] = useState("");
@@ -34,7 +36,7 @@ const SearchTable = memo((props) => {
             size="small"
             style={{ width: 90 }}
           >
-            Search
+            搜索
           </Button>
 
           <Button
@@ -42,7 +44,7 @@ const SearchTable = memo((props) => {
             size="small"
             style={{ width: 90 }}
           >
-            Reset
+            重置
           </Button>
         </Space>
       </div>
@@ -57,7 +59,11 @@ const SearchTable = memo((props) => {
         : "",
 
     filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1890ff" : undefined,
+        }}
+      />
     ),
 
     render: (dataIndex) => {
@@ -86,18 +92,20 @@ const SearchTable = memo((props) => {
   });
 
   return (
-    <Table
-      columns={columns}
-      dataSource={dataSource}
-      bordered={bordered}
-      pagination={{
-        pageSize: pageSize,
-        pageSizeOptions: [1, 3, 5, 10],
-        total: columns.size,
-        showSizeChanger: true,
-        onShowSizeChange: onShowSizeChange,
-      }}
-    />
+    <TableWrapper>
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        bordered={bordered}
+        pagination={{
+          pageSize: pageSize,
+          pageSizeOptions: [1, 3, 5, 10],
+          total: columns.size,
+          showSizeChanger: true,
+          onShowSizeChange: onShowSizeChange,
+        }}
+      />
+    </TableWrapper>
   );
 });
 

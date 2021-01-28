@@ -11,10 +11,17 @@ export const sider_routes = [
   {
     title: "人员",
     link: "/personnel",
+    authority: 0,
   },
   {
     title: "项目",
     link: "/project",
+    authority: 0,
+  },
+  {
+    title: "权限管理",
+    link: "/authority",
+    authority: 2,
   },
 ];
 

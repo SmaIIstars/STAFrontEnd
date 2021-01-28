@@ -10,3 +10,8 @@ export const getPersonnelList = () => {
     },
   });
 };
+
+export const filesUpload = (option) => {
+  console.log(option);
+  return request({});
+};

@@ -1,11 +1,14 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { Menu, Dropdown, Button } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 
 import { getPersonnelListAction } from "./store/actionCreatores";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
-import { ContainerWrapper } from "./style";
+import UploadWindow from "components/UploadWindow";
+import { ContainerWrapper, SearchTableWrapper, TitleWrapper } from "./style";
 
 const columns = [
   {
@@ -43,6 +46,8 @@ const Personnel = memo((props) => {
       personnelList: state.getIn(["personnel", "personnelList"]),
     };
   }, shallowEqual);
+  const [isImportPage, setIsImportPage] = useState(false);
+  const [isCoverPage, setIsCoverPage] = useState(false);
 
   useEffect(() => {
     dispatch(getPersonnelListAction());
@@ -57,20 +62,70 @@ const Personnel = memo((props) => {
 
   const dataSource = getDataSource(personnelList);
 
+  const menu = (
+    <Menu>
+      <Menu.Item>
+        <span onClick={() => setIsImportPage(true)}>新增数据</span>
+      </Menu.Item>
+
+      <Menu.Item>
+        <span onClick={() => setIsCoverPage(true)}>覆盖数据</span>
+      </Menu.Item>
+    </Menu>
+  );
+
+  const handleCancel = (name) => {
+    switch (name) {
+      case "import":
+        setIsImportPage(false);
+        break;
+      case "cover":
+        setIsCoverPage(false);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const HeaderObj = {
+    leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
+    // midHeader: <div>mid</div>,
+    rightHeader: (
+      <Dropdown overlay={menu}>
+        <Button onClick={(e) => e.preventDefault()}>
+          数据导入 <DownOutlined />
+        </Button>
+      </Dropdown>
+    ),
+  };
+
   return (
-    <Container
-      isHeader={false}
-      Header={{
-        leftHeader: <div>left</div>,
-        midHeader: <div>mid</div>,
-        rightHeader: <div>right</div>,
-      }}
-    >
+    <Container isHeader={true} Header={{ ...HeaderObj }}>
       <ContainerWrapper>
-        <SearchTable
-          columns={columns}
-          dataSource={dataSource}
-          bordered={true}
+        <SearchTableWrapper>
+          <SearchTable
+            columns={columns}
+            dataSource={dataSource}
+            bordered={true}
+          />
+        </SearchTableWrapper>
+
+        <UploadWindow
+          isVisible={isImportPage}
+          title="新增数据"
+          cancel={() => {
+            handleCancel("import");
+          }}
+          oK={() => {}}
+        />
+
+        <UploadWindow
+          isVisible={isCoverPage}
+          title="覆盖数据"
+          cancel={() => {
+            handleCancel("cover");
+          }}
+          oK={() => {}}
         />
       </ContainerWrapper>
     </Container>

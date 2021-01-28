@@ -1,12 +1,20 @@
 import React, { memo } from "react";
+import { useLocation } from "react-router";
 
-import { ContainerWrapper } from "./style";
+import { sider_routes } from "@/assets/local_data.js";
+
 import CHeader from "./cpn/Header";
+import { ContainerWrapper } from "./style";
 
 const Container = memo((props) => {
+  const location = useLocation();
+  const title = sider_routes.filter(
+    (item) => item.link === location.pathname
+  )[0].title;
+
   const { isHeader, Header, children } = props;
   if (isHeader) {
-    var { leftHeader = null, midHeader = null, rightHeader = null } = Header;
+    var { leftHeader = title, midHeader = null, rightHeader = null } = Header;
   }
 
   return (

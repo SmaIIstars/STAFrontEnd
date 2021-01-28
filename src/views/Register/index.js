@@ -1,12 +1,13 @@
 import React, { memo, useEffect, useState } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 import CryptoJS from "crypto-js";
 
 import LoginContainer from "components/LoginContainer";
-import { emailCaptcha } from "servers/register";
+import { emailCaptcha, registerUser } from "servers/register";
 
 import { CAPTCHA_REMAINING_TIME } from "./constants";
 import { RegisterFrame, CaptchaWrapper } from "./style";
+import { useHistory } from "react-router";
 
 const formItemLayout = {
   labelCol: {
@@ -18,6 +19,8 @@ const formItemLayout = {
 };
 
 const Register = memo((props) => {
+  const history = useHistory();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState();
   const [email, setEmail] = useState();
@@ -82,7 +85,21 @@ const Register = memo((props) => {
 
   // register
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+    registerUser({ username, password, email }).then((res) => {
+      const { data } = res;
+      if (data.code === 1004) {
+        message.error({
+          content: data.message,
+        });
+      }
+
+      message.success({
+        content: "注册成功, 跳转中...",
+      });
+      setTimeout(() => {
+        history.replace("/login");
+      }, 3000);
+    });
   };
 
   return (

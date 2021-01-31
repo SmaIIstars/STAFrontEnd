@@ -9,13 +9,16 @@ const UploadArea = (props) => {
 
   const uploadprops = {
     name: "file",
-    accept: ".xls, .xlsx",
-    customRequest: (option) => {
-      console.log(option);
+    action: "api/files/upload",
+    headers: {
+      ContentType: "multipart/form-data",
     },
+
+    method: "POST",
+    accept: ".xls, .xlsx",
     beforeUpload: (file, fileList) => {
       return new Promise((resolve, reject) => {
-        console.log(file);
+        // console.log(file);
         if (
           file.type !==
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -23,9 +26,10 @@ const UploadArea = (props) => {
           message.error({
             content: "上传文件格式错误!",
           });
-          reject(false);
+        } else {
+          resolve(true);
         }
-        resolve(true);
+        reject(false);
       });
     },
     multiple,

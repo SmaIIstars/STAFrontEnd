@@ -7,6 +7,7 @@ import { getPersonnelListAction } from "./store/actionCreatores";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
+import DownloadAnchor from "common/DownloadAnchor";
 import UploadWindow from "components/UploadWindow";
 import { ContainerWrapper, SearchTableWrapper, TitleWrapper } from "./style";
 
@@ -64,6 +65,10 @@ const Personnel = memo((props) => {
 
   const menu = (
     <Menu>
+      <Menu.Item>
+        <DownloadAnchor text={"下载模板"} fileName="123" />
+      </Menu.Item>
+
       <Menu.Item>
         <span onClick={() => setIsImportPage(true)}>新增数据</span>
       </Menu.Item>

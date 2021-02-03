@@ -21,7 +21,7 @@ const UploadArea = (props) => {
     onChange = (info) => {
       const { status } = info.file;
       if (status !== "uploading") {
-        console.log(info.fileList);
+        console.log(status, info.fileList);
       }
       if (status === "done") {
         message.success(`${info.file.name} 文件上传成功!`);

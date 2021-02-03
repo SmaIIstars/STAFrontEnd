@@ -10,3 +10,12 @@ export const filesUpload = (files) => {
     data: files,
   });
 };
+
+export const filesDownload = (fileName) => {
+  return request({
+    url: "api/files/download",
+    params: {
+      fileName,
+    },
+  });
+};

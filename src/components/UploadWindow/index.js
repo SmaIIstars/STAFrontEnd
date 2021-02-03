@@ -4,11 +4,12 @@ import { Modal } from "antd";
 import UploadArea from "common/UploadArea";
 
 const UploadWindow = (props) => {
-  const { isVisible = false, ok, cancel, title = "Basic" } = props;
+  const { ModalProps, UploadProps } = props;
+  const { isVisible = false, ok, cancel, title = "Basic" } = ModalProps;
 
   return (
     <Modal title={title} visible={isVisible} onOk={ok} onCancel={cancel}>
-      <UploadArea />
+      <UploadArea UploadProps={UploadProps} />
     </Modal>
   );
 };

@@ -5,18 +5,32 @@ import { InboxOutlined } from "@ant-design/icons";
 const { Dragger } = Upload;
 
 const UploadArea = (props) => {
-  const { multiple = false } = props;
+  const { UploadProps = {}, TipText = ".xls 或者 .xlsx" } = props;
+  const {
+    name = "file",
+    multiple = false,
+    showUploadList = true,
+    accept,
 
-  const uploadprops = {
-    name: "file",
-    action: "api/files/upload",
-    headers: {
+    action = "api/files/upload",
+    method,
+    headers = {
       ContentType: "multipart/form-data",
     },
 
-    method: "POST",
-    accept: ".xls, .xlsx",
-    beforeUpload: (file, fileList) => {
+    onChange = (info) => {
+      const { status } = info.file;
+      if (status !== "uploading") {
+        console.log(info.fileList);
+      }
+      if (status === "done") {
+        message.success(`${info.file.name} 文件上传成功!`);
+      } else if (status === "error") {
+        message.error(`${info.file.name} 文件上传失败!`);
+      }
+    },
+
+    beforeUpload = (file, fileList) => {
       return new Promise((resolve, reject) => {
         // console.log(file);
         if (
@@ -32,20 +46,21 @@ const UploadArea = (props) => {
         reject(false);
       });
     },
-    multiple,
-    transformFile: () => {},
+  } = UploadProps;
 
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.fileList);
-      }
-      if (status === "done") {
-        message.success(`${info.file.name} 文件上传成功!`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} 文件上传失败!`);
-      }
-    },
+  const uploadprops = {
+    name,
+    multiple,
+    showUploadList,
+    accept,
+
+    action,
+    method,
+    headers,
+
+    beforeUpload,
+    onChange,
+    transformFile: (file) => file,
   };
 
   return (
@@ -54,7 +69,7 @@ const UploadArea = (props) => {
         <InboxOutlined />
       </p>
       <p className="ant-upload-text">单击或拖动文件到此区域进行上传</p>
-      <p className="ant-upload-text">(.xls 或者 .xlsx)</p>
+      <p className="ant-upload-text">{TipText}</p>
     </Dragger>
   );
 };

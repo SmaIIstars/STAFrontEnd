@@ -75,6 +75,7 @@ const Personnel = memo((props) => {
   );
 
   const handleCancel = (name) => {
+    // console.log(name);
     switch (name) {
       case "import":
         setIsImportPage(false);
@@ -111,21 +112,28 @@ const Personnel = memo((props) => {
         </SearchTableWrapper>
 
         <UploadWindow
-          isVisible={isImportPage}
-          title="新增数据"
-          cancel={() => {
-            handleCancel("import");
+          ModalProps={{
+            isVisible: isImportPage,
+            title: "新增数据",
+            cancel: () => {
+              handleCancel("import");
+            },
+            oK: () => {},
           }}
-          oK={() => {}}
+          UploadProps={{
+            accept: ".xls, .xlsx",
+          }}
         />
 
         <UploadWindow
-          isVisible={isCoverPage}
-          title="覆盖数据"
-          cancel={() => {
-            handleCancel("cover");
+          ModalProps={{
+            isVisible: isCoverPage,
+            title: "覆盖数据",
+            cancel: () => {
+              handleCancel("cover");
+            },
+            oK: () => {},
           }}
-          oK={() => {}}
         />
       </ContainerWrapper>
     </Container>

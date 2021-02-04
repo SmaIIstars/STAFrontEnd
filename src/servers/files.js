@@ -17,5 +17,6 @@ export const filesDownload = (fileName) => {
     params: {
       fileName,
     },
+    responseType: "blob",
   });
 };

@@ -66,7 +66,7 @@ const Personnel = memo((props) => {
   const menu = (
     <Menu>
       <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="123" />
+        <DownloadAnchor text={"下载模板"} fileName="personnel" />
       </Menu.Item>
 
       <Menu.Item>

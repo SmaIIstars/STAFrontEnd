@@ -5,7 +5,7 @@ import { InboxOutlined } from "@ant-design/icons";
 const { Dragger } = Upload;
 
 const UploadArea = (props) => {
-  const { UploadProps = {}, TipText = ".xls 或者 .xlsx" } = props;
+  const { UploadProps = {}, TipText = ".xlsx" } = props;
   const {
     name = "file",
     multiple = false,

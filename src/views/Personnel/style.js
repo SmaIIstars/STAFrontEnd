@@ -15,3 +15,7 @@ export const TitleWrapper = styled.div`
   font-weight: 600;
   padding: 0 16px;
 `;
+
+export const DropDownWrapper = styled.div`
+  margin-right: 20px;
+`;

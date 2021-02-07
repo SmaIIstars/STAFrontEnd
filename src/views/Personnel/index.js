@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { Menu, Dropdown, Button } from "antd";
+import { Menu, Dropdown, Button, Space } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 
 import { getPersonnelListAction } from "./store/actionCreatores";
@@ -9,7 +9,12 @@ import Container from "common/Container";
 import SearchTable from "common/SearchTable";
 import DownloadAnchor from "common/DownloadAnchor";
 import UploadWindow from "components/UploadWindow";
-import { ContainerWrapper, SearchTableWrapper, TitleWrapper } from "./style";
+import {
+  ContainerWrapper,
+  SearchTableWrapper,
+  TitleWrapper,
+  DropDownWrapper,
+} from "./style";
 
 const columns = [
   {
@@ -97,11 +102,17 @@ const Personnel = memo((props) => {
     leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
     rightHeader: (
-      <Dropdown overlay={menu}>
-        <Button onClick={(e) => e.preventDefault()}>
-          数据导入 <DownOutlined />
-        </Button>
-      </Dropdown>
+      <DropDownWrapper>
+        <Space>
+          <Dropdown overlay={menu}>
+            <Button onClick={(e) => e.preventDefault()}>
+              数据导入 <DownOutlined />
+            </Button>
+          </Dropdown>
+
+          <Button onClick={(e) => e.preventDefault()}>新增数据</Button>
+        </Space>
+      </DropDownWrapper>
     ),
   };
 
@@ -126,7 +137,7 @@ const Personnel = memo((props) => {
             oK: () => {},
           }}
           UploadProps={{
-            accept: ".xls, .xlsx",
+            accept: ".xlsx",
           }}
         />
 

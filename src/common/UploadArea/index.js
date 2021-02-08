@@ -12,7 +12,7 @@ const UploadArea = (props) => {
     showUploadList = true,
     accept,
 
-    action = "api/files/upload",
+    action,
     method,
     headers = {
       ContentType: "multipart/form-data",

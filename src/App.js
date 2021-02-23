@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { Layout, Spin } from "antd";
 import { renderRoutes } from "react-router-config";
 import { BrowserRouter, Route } from "react-router-dom";
@@ -22,6 +22,11 @@ const App = memo(function App(props) {
     (state) => state.getIn(["app", "loading"]),
     shallowEqual
   );
+  const [siderCollapsed, setSiderCollapsed] = useState(false);
+
+  const getSiderCollapsed = (status) => {
+    setSiderCollapsed(status);
+  };
 
   return (
     <BrowserRouter>
@@ -35,8 +40,11 @@ const App = memo(function App(props) {
         </Route>
         <MainLayout>
           <Layout className="layoutwrapper">
-            <Sider />
-            <Layout className="site-layout">
+            <Sider getSiderCollapsed={getSiderCollapsed} />
+            <Layout
+              className="site-layout"
+              style={siderCollapsed ? { marginLeft: 80 } : { marginLeft: 200 }}
+            >
               <Header />
               <Spin spinning={loading} wrapperClassName="page-loading">
                 <Content>{renderRoutes(mainRoutes)}</Content>

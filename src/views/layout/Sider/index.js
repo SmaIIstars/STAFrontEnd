@@ -14,9 +14,20 @@ const Sider = memo((props) => {
 
   const onCollapse = (collapsed) => {
     setCollapsed(collapsed);
+    props.getSiderCollapsed(collapsed);
   };
+
   return (
-    <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
+    <Sider
+      collapsible
+      collapsed={collapsed}
+      onCollapse={onCollapse}
+      style={{
+        height: "100vh",
+        position: "fixed",
+        left: 0,
+      }}
+    >
       <SiderTitle>STA</SiderTitle>
 
       <Menu theme="dark" defaultSelectedKeys={["0"]} mode="inline">
@@ -35,5 +46,4 @@ const Sider = memo((props) => {
     </Sider>
   );
 });
-
 export default Sider;

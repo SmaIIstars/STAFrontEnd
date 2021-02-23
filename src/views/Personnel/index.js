@@ -138,7 +138,7 @@ const Personnel = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/import",
+            action: "api/files/upload/import?type=personnel",
           }}
         />
 
@@ -153,7 +153,7 @@ const Personnel = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/cover",
+            action: "api/files/upload/cover?type=personnel",
           }}
         />
       </ContainerWrapper>

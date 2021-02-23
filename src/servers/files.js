@@ -2,7 +2,7 @@ import request from "./request";
 
 export const filesUpload = (files) => {
   return request({
-    url: "api/files/upload/add",
+    url: "api/files/upload/import",
     method: "POST",
     headers: {
       ContentType: "multipart/form-data",

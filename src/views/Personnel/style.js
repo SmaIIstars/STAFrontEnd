@@ -8,6 +8,10 @@ export const ContainerWrapper = styled.div`
 
 export const SearchTableWrapper = styled.div`
   padding: 20px;
+
+  .ant-table-filter-column-title {
+    padding: 16px;
+  }
 `;
 
 export const TitleWrapper = styled.div`

@@ -88,7 +88,9 @@ const SearchTable = memo((props) => {
   };
 
   columns.forEach((item) => {
-    Object.assign(item, getColumnSearchProps(item.key));
+    if (item.isSearch === undefined || item.isSearch === true) {
+      Object.assign(item, getColumnSearchProps(item.key));
+    }
   });
 
   return (

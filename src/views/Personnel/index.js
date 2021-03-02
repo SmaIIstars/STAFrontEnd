@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { Menu, Dropdown, Button, Space } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 import { getPersonnelListAction } from "./store/actionCreatores";
 
@@ -16,19 +16,19 @@ import {
   DropDownWrapper,
 } from "./style";
 
+let authority = localStorage.getItem("authority");
+
 const columns = [
   {
     title: "姓名",
     dataIndex: "name",
     key: "name",
-    width: "30%",
     align: "center",
   },
   {
     title: "学位",
     dataIndex: "degree",
     key: "degree",
-    width: "20%",
     align: "center",
   },
   {
@@ -44,6 +44,28 @@ const columns = [
     align: "center",
   },
 ];
+
+if (authority > 0) {
+  columns.push({
+    title: "操作",
+    dataIndex: "operation",
+    key: "operation",
+    align: "center",
+    width: "15%",
+    isSearch: false,
+    render: () => (
+      <Space>
+        <Button type="primary" shape="circle">
+          <EditOutlined />
+        </Button>
+
+        <Button type="danger" shape="circle">
+          <DeleteOutlined />
+        </Button>
+      </Space>
+    ),
+  });
+}
 
 const Personnel = memo((props) => {
   const dispatch = useDispatch();

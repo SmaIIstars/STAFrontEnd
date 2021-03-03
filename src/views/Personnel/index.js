@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { Menu, Dropdown, Button, Space } from "antd";
+import { Menu, Dropdown, Button, Space, Modal, Input, Form } from "antd";
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 import { getPersonnelListAction } from "./store/actionCreatores";
@@ -15,8 +15,6 @@ import {
   TitleWrapper,
   DropDownWrapper,
 } from "./style";
-
-let authority = localStorage.getItem("authority");
 
 const columns = [
   {
@@ -45,28 +43,6 @@ const columns = [
   },
 ];
 
-if (authority > 0) {
-  columns.push({
-    title: "操作",
-    dataIndex: "operation",
-    key: "operation",
-    align: "center",
-    width: "15%",
-    isSearch: false,
-    render: () => (
-      <Space>
-        <Button type="primary" shape="circle">
-          <EditOutlined />
-        </Button>
-
-        <Button type="danger" shape="circle">
-          <DeleteOutlined />
-        </Button>
-      </Space>
-    ),
-  });
-}
-
 const Personnel = memo((props) => {
   const dispatch = useDispatch();
   const { personnelList } = useSelector((state) => {
@@ -76,10 +52,60 @@ const Personnel = memo((props) => {
   }, shallowEqual);
   const [isImportPage, setIsImportPage] = useState(false);
   const [isCoverPage, setIsCoverPage] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
+  const [rowData, setRowData] = useState({});
 
   useEffect(() => {
     dispatch(getPersonnelListAction());
   }, [dispatch]);
+
+  if (
+    localStorage.getItem("authority") > 0 &&
+    !columns.find((item) => item.key === "operation")
+  ) {
+    columns.push({
+      title: "操作",
+      dataIndex: "operation",
+      key: "operation",
+      align: "center",
+      width: "15%",
+      isSearch: false,
+      render: (text, record, index) => (
+        <Space>
+          <Button
+            type="primary"
+            shape="circle"
+            onClick={() => {
+              showEditModal(record);
+            }}
+          >
+            <EditOutlined />
+          </Button>
+
+          <Button type="danger" shape="circle" onClick={showDeleteModal}>
+            <DeleteOutlined />
+          </Button>
+        </Space>
+      ),
+    });
+  }
+
+  const showEditModal = (record) => {
+    setRowData(record);
+    setIsEditModal(true);
+  };
+
+  const eidtModalhandleOk = () => {
+    setIsEditModal(false);
+  };
+
+  const editModalhandleCancel = () => {
+    setIsEditModal(false);
+  };
+
+  const showDeleteModal = () => {
+    console.log("delete");
+  };
 
   const getDataSource = (dataSource) =>
     dataSource
@@ -178,6 +204,33 @@ const Personnel = memo((props) => {
             action: "api/files/upload/cover?type=personnel",
           }}
         />
+
+        <Modal
+          title="编辑数据"
+          visible={isEditModal}
+          onCancel={editModalhandleCancel}
+          onOk={eidtModalhandleOk}
+        >
+          <Form
+            labelCol={{
+              span: 4,
+            }}
+            wrapperCol={{
+              span: 14,
+            }}
+          >
+            {Object.keys(rowData).map((item) => {
+              if (item !== "key") {
+                return (
+                  <Form.Item key={item} label={item}>
+                    <Input value={rowData[item]} />
+                  </Form.Item>
+                );
+              }
+              return null;
+            })}
+          </Form>
+        </Modal>
       </ContainerWrapper>
     </Container>
   );

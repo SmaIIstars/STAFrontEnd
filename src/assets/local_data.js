@@ -46,3 +46,13 @@ export const layout_header_dropdown_items = [
     href: "/login",
   },
 ];
+
+// Chinese-English
+export const transformWords = {
+  //
+  id: "ID",
+  name: "名字",
+  degree: "学位",
+  EB: "学历",
+  title: "职称",
+};

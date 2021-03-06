@@ -16,6 +16,8 @@ import {
   DropDownWrapper,
 } from "./style";
 
+import { transformWords } from "assets/local_data";
+
 const columns = [
   {
     title: "姓名",
@@ -90,19 +92,56 @@ const Personnel = memo((props) => {
     });
   }
 
+  // Modal
+  const [editModalForm] = Form.useForm();
+
+  // Edit Modal
+  const [name, setName] = useState("");
+  const [degree, setDegree] = useState("");
+  const [EB, setEB] = useState("");
+  const [title, setTitle] = useState("");
+
   const showEditModal = (record) => {
     setRowData(record);
     setIsEditModal(true);
+
+    setName(record["name"]);
+    setDegree(record["degree"]);
+    setEB(record["EB"]);
+    setTitle(record["title"]);
   };
 
   const eidtModalhandleOk = () => {
     setIsEditModal(false);
+    console.log(editModalForm.getFieldsValue(true));
+    // console.log(editModalForm);
   };
 
   const editModalhandleCancel = () => {
     setIsEditModal(false);
   };
 
+  const modalOnChange = (e, key) => {
+    let value = e.target.value;
+    switch (key) {
+      case "name":
+        setName(value);
+        break;
+      case "degree":
+        setDegree(value);
+        break;
+      case "EB":
+        setEB(value);
+        break;
+      case "title":
+        setTitle(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Delete Modal
   const showDeleteModal = () => {
     console.log("delete");
   };
@@ -218,12 +257,19 @@ const Personnel = memo((props) => {
             wrapperCol={{
               span: 14,
             }}
+            form={editModalForm}
           >
             {Object.keys(rowData).map((item) => {
-              if (item !== "key") {
+              if (!["key", "id"].includes(item)) {
+                let values = { name, degree, EB, title };
                 return (
-                  <Form.Item key={item} label={item}>
-                    <Input value={rowData[item]} />
+                  <Form.Item key={item} label={transformWords[item]}>
+                    <Input
+                      value={values[item]}
+                      onChange={(e) => {
+                        modalOnChange(e, item);
+                      }}
+                    />
                   </Form.Item>
                 );
               }

@@ -5,6 +5,7 @@ import { Form, Input, Button, message } from "antd";
 import { loginRequest } from "servers/login";
 
 import LoginContainer from "components/LoginContainer";
+import { user } from "assets/local_data";
 import { LoginFrame } from "./style";
 
 const formItemLayout = {
@@ -31,6 +32,10 @@ const Login = memo((props) => {
           localStorage.setItem("token", token);
           localStorage.setItem("username", username);
           localStorage.setItem("authority", authority);
+          localStorage.setItem("email", email);
+
+          // This value needs to be update immediately, otherwise it will cause error during Sider rendering. LocalStorage value, although update immediately, but can't available during the rendering.
+          user.authority = authority;
 
           history.push("/personnel");
         } else {

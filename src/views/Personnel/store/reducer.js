@@ -10,6 +10,7 @@ const reducer = (state = defaultState, action) => {
   switch (action.type) {
     case CHANGE_PERSONNEL_LIST:
       return state.set("personnelList", action.personnelList);
+
     default:
       return state;
   }

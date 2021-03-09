@@ -1,9 +1,20 @@
 import React, { memo, useEffect, useState } from "react";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { Menu, Dropdown, Button, Space, Modal, Input, Form } from "antd";
+import {
+  Menu,
+  Dropdown,
+  Button,
+  Space,
+  Modal,
+  Input,
+  Form,
+  Popconfirm,
+  message,
+} from "antd";
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 import { getPersonnelListAction } from "./store/actionCreatores";
+import { changePersonnelInfo, deletePersonnel } from "servers/personnel";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -16,37 +27,11 @@ import {
   DropDownWrapper,
 } from "./style";
 
-import { transformWords } from "assets/local_data";
-
-const columns = [
-  {
-    title: "姓名",
-    dataIndex: "name",
-    key: "name",
-    align: "center",
-  },
-  {
-    title: "学位",
-    dataIndex: "degree",
-    key: "degree",
-    align: "center",
-  },
-  {
-    title: "学历",
-    dataIndex: "EB",
-    key: "EB",
-    align: "center",
-  },
-  {
-    title: "职称",
-    dataIndex: "title",
-    key: "title",
-    align: "center",
-  },
-];
+import { transformWords, authority } from "assets/local_data";
 
 const Personnel = memo((props) => {
   const dispatch = useDispatch();
+
   const { personnelList } = useSelector((state) => {
     return {
       personnelList: state.getIn(["personnel", "personnelList"]),
@@ -55,14 +40,42 @@ const Personnel = memo((props) => {
   const [isImportPage, setIsImportPage] = useState(false);
   const [isCoverPage, setIsCoverPage] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
+  // const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [rowData, setRowData] = useState({});
 
   useEffect(() => {
     dispatch(getPersonnelListAction());
   }, [dispatch]);
 
+  const columns = [
+    {
+      title: "姓名",
+      dataIndex: "name",
+      key: "name",
+      align: "center",
+    },
+    {
+      title: "学位",
+      dataIndex: "degree",
+      key: "degree",
+      align: "center",
+    },
+    {
+      title: "学历",
+      dataIndex: "EB",
+      key: "EB",
+      align: "center",
+    },
+    {
+      title: "职称",
+      dataIndex: "title",
+      key: "title",
+      align: "center",
+    },
+  ];
+
   if (
-    localStorage.getItem("authority") > 0 &&
+    localStorage.getItem("authority") > authority.guest &&
     !columns.find((item) => item.key === "operation")
   ) {
     columns.push({
@@ -84,18 +97,67 @@ const Personnel = memo((props) => {
             <EditOutlined />
           </Button>
 
-          <Button type="danger" shape="circle" onClick={showDeleteModal}>
-            <DeleteOutlined />
-          </Button>
+          <Popconfirm
+            title="确定要删除此行数据吗?"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => {
+              popconfirmOnConfirm(record);
+            }}
+          >
+            <Button type="danger" shape="circle">
+              <DeleteOutlined />
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     });
   }
 
+  const getDataSource = (dataSource) =>
+    dataSource
+      ? dataSource.map((item) => {
+          return Object.assign(item, { key: item.id });
+        })
+      : null;
+
+  const menu = (
+    <Menu>
+      <Menu.Item>
+        <DownloadAnchor text={"下载模板"} fileName="personnel" />
+      </Menu.Item>
+
+      <Menu.Item>
+        <span onClick={() => setIsImportPage(true)}>新增数据</span>
+      </Menu.Item>
+
+      <Menu.Item>
+        <span onClick={() => setIsCoverPage(true)}>覆盖数据</span>
+      </Menu.Item>
+    </Menu>
+  );
+
+  // Upload
+  const uploadHandleCancel = (name) => {
+    // console.log(name);
+    switch (name) {
+      case "import":
+        setIsImportPage(false);
+        break;
+      case "cover":
+        setIsCoverPage(false);
+        break;
+      default:
+        break;
+    }
+  };
+
   // Modal
+  // It's a Array
   const [editModalForm] = Form.useForm();
 
   // Edit Modal
+  const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [degree, setDegree] = useState("");
   const [EB, setEB] = useState("");
@@ -105,16 +167,40 @@ const Personnel = memo((props) => {
     setRowData(record);
     setIsEditModal(true);
 
+    setId(record["id"]);
     setName(record["name"]);
     setDegree(record["degree"]);
     setEB(record["EB"]);
     setTitle(record["title"]);
+
+    // The setState is async
+    editModalForm.setFieldsValue({
+      id: record["id"],
+      name: record["name"],
+      degree: record["degree"],
+      EB: record["EB"],
+      title: record["title"],
+    });
   };
 
   const eidtModalhandleOk = () => {
     setIsEditModal(false);
-    console.log(editModalForm.getFieldsValue(true));
-    // console.log(editModalForm);
+    const values = editModalForm.getFieldsValue();
+    changePersonnelInfo(values).then((res) => {
+      const { data } = res;
+      if (data.code === 1200) {
+        message.success({
+          content: "更新成功",
+          duration: 3,
+        });
+      } else {
+        message.error({
+          content: "更新失败: " + data.message,
+          duration: 3,
+        });
+      }
+    });
+    dispatch(getPersonnelListAction());
   };
 
   const editModalhandleCancel = () => {
@@ -141,50 +227,26 @@ const Personnel = memo((props) => {
     }
   };
 
-  // Delete Modal
-  const showDeleteModal = () => {
-    console.log("delete");
+  // Delete Button
+  const popconfirmOnConfirm = (record) => {
+    deletePersonnel(record).then((res) => {
+      const { data } = res;
+      if (data.code === 1200) {
+        message.success({
+          content: "删除成功",
+          duration: 3,
+        });
+      } else {
+        message.error({
+          content: "删除失败: " + data.message,
+          duration: 3,
+        });
+      }
+    });
+    dispatch(getPersonnelListAction());
   };
 
-  const getDataSource = (dataSource) =>
-    dataSource
-      ? dataSource.map((item) => {
-          return Object.assign(item, { key: item.id });
-        })
-      : null;
-
-  const dataSource = getDataSource(personnelList);
-
-  const menu = (
-    <Menu>
-      <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="personnel" />
-      </Menu.Item>
-
-      <Menu.Item>
-        <span onClick={() => setIsImportPage(true)}>新增数据</span>
-      </Menu.Item>
-
-      <Menu.Item>
-        <span onClick={() => setIsCoverPage(true)}>覆盖数据</span>
-      </Menu.Item>
-    </Menu>
-  );
-
-  const handleCancel = (name) => {
-    // console.log(name);
-    switch (name) {
-      case "import":
-        setIsImportPage(false);
-        break;
-      case "cover":
-        setIsCoverPage(false);
-        break;
-      default:
-        break;
-    }
-  };
-
+  // JSX
   const HeaderObj = {
     leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
@@ -209,7 +271,7 @@ const Personnel = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={dataSource}
+            dataSource={getDataSource(personnelList)}
             bordered={true}
           />
         </SearchTableWrapper>
@@ -219,7 +281,7 @@ const Personnel = memo((props) => {
             isVisible: isImportPage,
             title: "新增数据",
             cancel: () => {
-              handleCancel("import");
+              uploadHandleCancel("import");
             },
             oK: () => {},
           }}
@@ -234,7 +296,7 @@ const Personnel = memo((props) => {
             isVisible: isCoverPage,
             title: "覆盖数据",
             cancel: () => {
-              handleCancel("cover");
+              uploadHandleCancel("cover");
             },
             oK: () => {},
           }}
@@ -257,15 +319,25 @@ const Personnel = memo((props) => {
             wrapperCol={{
               span: 14,
             }}
+            name={"editModal"}
             form={editModalForm}
           >
             {Object.keys(rowData).map((item) => {
-              if (!["key", "id"].includes(item)) {
+              // if (!["key", "id"].includes(item))
+
+              if (!["key"].includes(item)) {
                 let values = { name, degree, EB, title };
+
                 return (
-                  <Form.Item key={item} label={transformWords[item]}>
+                  // The items must have name
+                  <Form.Item
+                    key={item}
+                    label={transformWords[item]}
+                    name={item}
+                    style={item === "id" ? { display: "none" } : null}
+                  >
                     <Input
-                      value={values[item]}
+                      values={item === "id" ? id : values[item]}
                       onChange={(e) => {
                         modalOnChange(e, item);
                       }}

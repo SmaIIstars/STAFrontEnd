@@ -6,22 +6,28 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
+export const authority = {
+  guest: 0,
+  admin: 1,
+  superAdmin: 2,
+};
+
 // routes of Sider
 export const sider_routes = [
   {
     title: "人员",
     link: "/personnel",
-    authority: 0,
+    authority: authority.guest,
   },
   {
     title: "项目",
     link: "/project",
-    authority: 0,
+    authority: authority.guest,
   },
   {
     title: "权限管理",
     link: "/authority",
-    authority: 2,
+    authority: authority.superAdmin,
   },
 ];
 
@@ -55,4 +61,11 @@ export const transformWords = {
   degree: "学位",
   EB: "学历",
   title: "职称",
+};
+
+// User Info
+export const user = {
+  email: localStorage.getItem("email"),
+  username: localStorage.getItem("username"),
+  authority: parseInt(localStorage.getItem("authority")),
 };

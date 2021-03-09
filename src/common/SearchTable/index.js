@@ -66,6 +66,7 @@ const SearchTable = memo((props) => {
       />
     ),
 
+    // Overwrite custom render, If not, we can't search.
     render: (dataIndex) => {
       return dataIndex;
     },

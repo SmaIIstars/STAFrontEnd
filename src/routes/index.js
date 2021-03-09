@@ -2,6 +2,7 @@ import { Redirect } from "react-router-dom";
 
 import Personnel from "../views/Personnel";
 import Project from "../views/Project";
+import Authority from "../views/Authority";
 
 const mainRoutes = [
   {
@@ -16,6 +17,10 @@ const mainRoutes = [
   {
     path: "/project",
     component: Project,
+  },
+  {
+    path: "/authority",
+    component: Authority,
   },
 ];
 

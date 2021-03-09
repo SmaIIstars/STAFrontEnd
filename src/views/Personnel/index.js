@@ -43,14 +43,6 @@ const formLayout = {
   },
 };
 
-/* eslint-disable */
-// const validateMessages = {
-//   required: "${label} 不能为空!",
-//   types: {
-//     email: "'${label}' 格式不正确!",
-//   },
-// };
-
 const formRules = (value) => {
   switch (value) {
     case "name":
@@ -115,7 +107,6 @@ const Personnel = memo((props) => {
       isSearch: false,
       render: (text, record, index) => `${index + 1}`,
     },
-
     {
       title: "姓名",
       dataIndex: "name",
@@ -243,7 +234,7 @@ const Personnel = memo((props) => {
     );
 
     if (
-      values.filter((item) => [undefined, null, ""].includes(item)).length == 0
+      values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
       addPersonnel(formData).then((res) => {
         const { data } = res;
@@ -297,7 +288,7 @@ const Personnel = memo((props) => {
     );
 
     if (
-      values.filter((item) => [undefined, null, ""].includes(item)).length == 0
+      values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
       changePersonnelInfo(formData).then((res) => {
         const { data } = res;

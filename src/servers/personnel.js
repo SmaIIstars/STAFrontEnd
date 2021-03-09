@@ -34,3 +34,14 @@ export const deletePersonnel = (info) => {
     },
   });
 };
+
+export const addPersonnel = (info) => {
+  return request({
+    method: "post",
+    url: "api/personnel/add",
+    data: {
+      user,
+      info,
+    },
+  });
+};

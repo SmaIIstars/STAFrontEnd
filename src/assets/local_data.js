@@ -55,8 +55,8 @@ export const layout_header_dropdown_items = [
 
 // Chinese-English
 export const transformWords = {
-  //
-  id: "ID",
+  // personnel
+  perid: "学号",
   name: "名字",
   degree: "学位",
   EB: "学历",

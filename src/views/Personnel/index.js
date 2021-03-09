@@ -14,7 +14,11 @@ import {
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 import { getPersonnelListAction } from "./store/actionCreatores";
-import { changePersonnelInfo, deletePersonnel } from "servers/personnel";
+import {
+  changePersonnelInfo,
+  deletePersonnel,
+  addPersonnel,
+} from "servers/personnel";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -29,8 +33,56 @@ import {
 
 import { transformWords, authority } from "assets/local_data";
 
+const formLayout = {
+  labelCol: {
+    span: 5,
+  },
+  wrapperCol: {
+    offset: 1,
+    span: 14,
+  },
+};
+
+/* eslint-disable */
+// const validateMessages = {
+//   required: "${label} 不能为空!",
+//   types: {
+//     email: "'${label}' 格式不正确!",
+//   },
+// };
+
+const formRules = (value) => {
+  switch (value) {
+    case "name":
+    case "degree":
+    case "EB":
+    case "title":
+      return [
+        {
+          required: true,
+        },
+      ];
+    case "perid":
+      return [
+        {
+          required: true,
+        },
+        {
+          len: 12,
+          // message: "学号 格式不正确!",
+        },
+      ];
+
+    default:
+      return null;
+  }
+};
+
 const Personnel = memo((props) => {
   const dispatch = useDispatch();
+  // It's a Array
+  const [editModalForm] = Form.useForm();
+  const [addModalForm] = Form.useForm();
 
   const { personnelList } = useSelector((state) => {
     return {
@@ -39,15 +91,31 @@ const Personnel = memo((props) => {
   }, shallowEqual);
   const [isImportPage, setIsImportPage] = useState(false);
   const [isCoverPage, setIsCoverPage] = useState(false);
-  const [isEditModal, setIsEditModal] = useState(false);
-  // const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [rowData, setRowData] = useState({});
+
+  const [isEditModal, setIsEditModal] = useState(false);
+  // const [id, setId] = useState("");
+  // const [name, setName] = useState("");
+  // const [degree, setDegree] = useState("");
+  // const [EB, setEB] = useState("");
+  // const [title, setTitle] = useState("");
+
+  const [isAddModal, setIsAddModal] = useState(false);
 
   useEffect(() => {
     dispatch(getPersonnelListAction());
   }, [dispatch]);
 
   const columns = [
+    {
+      title: "#",
+      dataIndex: "index",
+      key: "index",
+      align: "center",
+      isSearch: false,
+      render: (text, record, index) => `${index + 1}`,
+    },
+
     {
       title: "姓名",
       dataIndex: "name",
@@ -117,7 +185,7 @@ const Personnel = memo((props) => {
   const getDataSource = (dataSource) =>
     dataSource
       ? dataSource.map((item) => {
-          return Object.assign(item, { key: item.id });
+          return Object.assign(item, { key: item.perid });
         })
       : null;
 
@@ -153,29 +221,68 @@ const Personnel = memo((props) => {
   };
 
   // Modal
-  // It's a Array
-  const [editModalForm] = Form.useForm();
+
+  // Add Modal
+  const addModalhandleReset = () => {
+    addModalForm.resetFields();
+  };
+
+  const showAddModal = () => {
+    setIsAddModal(true);
+  };
+
+  const addModalhandleCancel = () => {
+    setIsAddModal(false);
+  };
+
+  const addModalhandleOk = () => {
+    // setIsAddModal(false);
+    const formData = addModalForm.getFieldsValue();
+    let values = Object.values(formData).map((item) =>
+      item ? item.trim() : item
+    );
+
+    if (
+      values.filter((item) => [undefined, null, ""].includes(item)).length == 0
+    ) {
+      addPersonnel(formData).then((res) => {
+        const { data } = res;
+        if (data.code === 1200) {
+          message.success({
+            content: "新增成功",
+            duration: 3,
+          });
+          setIsAddModal(false);
+          dispatch(getPersonnelListAction());
+        } else {
+          message.error({
+            content: "新增失败: " + data.message,
+            duration: 3,
+          });
+        }
+      });
+    } else {
+      message.error({
+        content: "发送请求错误! 请检查表格内容是否完整!",
+        duration: 3,
+      });
+    }
+  };
 
   // Edit Modal
-  const [id, setId] = useState("");
-  const [name, setName] = useState("");
-  const [degree, setDegree] = useState("");
-  const [EB, setEB] = useState("");
-  const [title, setTitle] = useState("");
-
   const showEditModal = (record) => {
     setRowData(record);
     setIsEditModal(true);
 
-    setId(record["id"]);
-    setName(record["name"]);
-    setDegree(record["degree"]);
-    setEB(record["EB"]);
-    setTitle(record["title"]);
+    // setId(record["perid"]);
+    // setName(record["name"]);
+    // setDegree(record["degree"]);
+    // setEB(record["EB"]);
+    // setTitle(record["title"]);
 
     // The setState is async
     editModalForm.setFieldsValue({
-      id: record["id"],
+      perid: record["perid"],
       name: record["name"],
       degree: record["degree"],
       EB: record["EB"],
@@ -184,48 +291,64 @@ const Personnel = memo((props) => {
   };
 
   const eidtModalhandleOk = () => {
-    setIsEditModal(false);
-    const values = editModalForm.getFieldsValue();
-    changePersonnelInfo(values).then((res) => {
-      const { data } = res;
-      if (data.code === 1200) {
-        message.success({
-          content: "更新成功",
-          duration: 3,
-        });
-      } else {
-        message.error({
-          content: "更新失败: " + data.message,
-          duration: 3,
-        });
-      }
-    });
-    dispatch(getPersonnelListAction());
+    const formData = editModalForm.getFieldsValue();
+    let values = Object.values(formData).map((item) =>
+      item ? item.trim() : item
+    );
+
+    if (
+      values.filter((item) => [undefined, null, ""].includes(item)).length == 0
+    ) {
+      changePersonnelInfo(formData).then((res) => {
+        const { data } = res;
+        if (data.code === 1200) {
+          message.success({
+            content: "更新成功",
+            duration: 3,
+          });
+          setIsEditModal(false);
+          dispatch(getPersonnelListAction());
+        } else {
+          message.error({
+            content: "更新失败: " + data.message,
+            duration: 3,
+          });
+        }
+      });
+    } else {
+      message.error({
+        content: "发送请求错误! 请检查表格内容是否完整!",
+        duration: 3,
+      });
+    }
   };
 
   const editModalhandleCancel = () => {
     setIsEditModal(false);
   };
 
-  const modalOnChange = (e, key) => {
-    let value = e.target.value;
-    switch (key) {
-      case "name":
-        setName(value);
-        break;
-      case "degree":
-        setDegree(value);
-        break;
-      case "EB":
-        setEB(value);
-        break;
-      case "title":
-        setTitle(value);
-        break;
-      default:
-        break;
-    }
-  };
+  // const modalOnChange = (e, key) => {
+  //   let value = e.target.value;
+  //   switch (key) {
+  //     case "perid":
+  //       setName(id);
+  //       break;
+  //     case "name":
+  //       setName(value);
+  //       break;
+  //     case "degree":
+  //       setDegree(value);
+  //       break;
+  //     case "EB":
+  //       setEB(value);
+  //       break;
+  //     case "title":
+  //       setTitle(value);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   // Delete Button
   const popconfirmOnConfirm = (record) => {
@@ -259,7 +382,7 @@ const Personnel = memo((props) => {
             </Button>
           </Dropdown>
 
-          <Button onClick={(e) => e.preventDefault()}>新增数据</Button>
+          <Button onClick={showAddModal}>新增数据</Button>
         </Space>
       </DropDownWrapper>
     ),
@@ -307,40 +430,77 @@ const Personnel = memo((props) => {
         />
 
         <Modal
+          title="添加数据"
+          visible={isAddModal}
+          onCancel={addModalhandleCancel}
+          onOk={addModalhandleOk}
+          footer={[
+            <Button key="reset" onClick={addModalhandleReset}>
+              重置
+            </Button>,
+
+            <Button key="back" onClick={addModalhandleCancel}>
+              取消
+            </Button>,
+
+            <Button key="submit" type="primary" onClick={addModalhandleOk}>
+              确定
+            </Button>,
+          ]}
+        >
+          <Form
+            {...formLayout}
+            name={"addModal"}
+            form={addModalForm}
+            // validateMessages={validateMessages}
+          >
+            {Object.keys(transformWords).map((item) => {
+              // console.log(item);
+              return (
+                <Form.Item
+                  key={item}
+                  label={transformWords[item]}
+                  name={item}
+                  rules={formRules(item)}
+                >
+                  <Input
+                  // onChange={(e) => {
+                  //   modalOnChange(e, item);
+                  // }}
+                  />
+                </Form.Item>
+              );
+            })}
+          </Form>
+        </Modal>
+
+        <Modal
           title="编辑数据"
           visible={isEditModal}
           onCancel={editModalhandleCancel}
           onOk={eidtModalhandleOk}
+          okText={"确定"}
+          cancelText={"取消"}
         >
-          <Form
-            labelCol={{
-              span: 4,
-            }}
-            wrapperCol={{
-              span: 14,
-            }}
-            name={"editModal"}
-            form={editModalForm}
-          >
+          <Form {...formLayout} name={"editModal"} form={editModalForm}>
             {Object.keys(rowData).map((item) => {
               // if (!["key", "id"].includes(item))
 
               if (!["key"].includes(item)) {
-                let values = { name, degree, EB, title };
-
                 return (
                   // The items must have name
                   <Form.Item
                     key={item}
                     label={transformWords[item]}
                     name={item}
-                    style={item === "id" ? { display: "none" } : null}
+                    style={item === "perid" ? { display: "none" } : null}
+                    rules={formRules(item)}
                   >
                     <Input
-                      values={item === "id" ? id : values[item]}
-                      onChange={(e) => {
-                        modalOnChange(e, item);
-                      }}
+                      disabled={item === "perid"}
+                      // onChange={(e) => {
+                      //   modalOnChange(e, item);
+                      // }}
                     />
                   </Form.Item>
                 );

@@ -12,6 +12,12 @@ export const authority = {
   superAdmin: 2,
 };
 
+export const re_authority = {
+  0: "游客",
+  1: "管理员",
+  2: "超级管理员",
+};
+
 // routes of Sider
 export const sider_routes = [
   {
@@ -61,6 +67,12 @@ export const transformWords = {
   degree: "学位",
   EB: "学历",
   title: "职称",
+
+  // authority
+  email: "邮箱",
+  username: "用户名",
+  authority: "权限",
+  key: "关键词",
 };
 
 // User Info

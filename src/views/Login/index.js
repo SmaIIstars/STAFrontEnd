@@ -26,7 +26,7 @@ const Login = memo((props) => {
       .then((res) => {
         const { data } = res;
         // successful
-        if (data.code === 1001) {
+        if (data.code === 1000) {
           message.success("succesful");
           const { token, username, authority } = data.data;
           localStorage.setItem("token", token);

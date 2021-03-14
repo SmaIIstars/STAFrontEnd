@@ -11,8 +11,18 @@ import {
   message,
   Input,
   Table,
+  Tooltip,
+  Drawer,
+  List,
+  Switch,
 } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  QuestionCircleOutlined,
+  EnterOutlined,
+  RightOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
 import { getUserListAction } from "./store/actionCreatores";
 import Container from "common/Container";
@@ -22,6 +32,7 @@ import {
   TitleWrapper,
   SearchTableWrapper,
   DropDownWrapper,
+  ListItemWrapper,
 } from "./style";
 
 import { changeUserAuthority } from "servers/authority";
@@ -71,14 +82,18 @@ const query_columns = [
   },
 ];
 
+const switchProps = { checkedChildren: 0, unCheckedChildren: 1 };
+
 const Authority = (props) => {
   const dispatch = useDispatch();
   const [isEditModal, setIsEditModal] = useState(false);
   const [isAddModal, setIsAddModal] = useState(false);
   const [rowData, setRowData] = useState({});
-
   const [queryEmail, setQueryEmail] = useState();
   const [queryUsers, setQueryUsers] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [isDrawer, setIsDrawer] = useState(false);
 
   useEffect(() => {
     dispatch(getUserListAction());
@@ -91,12 +106,93 @@ const Authority = (props) => {
     shallowEqual
   );
 
-  const getDataSource = (dataSource) =>
-    dataSource
-      ? dataSource.map((item) => {
-          return Object.assign(item, { key: item.email });
-        })
-      : null;
+  // const onShowSizeChange = (current, pageSize) => setPageSize(pageSize);
+
+  const onSelectChange = (selectedRowKeys, selectedRows) => {
+    setSelectedRowKeys(selectedRowKeys);
+    setSelectedRows(
+      selectedRows.map((item) => Object.assign(item, { newAuthority: 1 }))
+    );
+  };
+
+  // Modal
+  // edit
+  const showEditModal = (record) => {
+    setIsEditModal(true);
+    setRowData(record);
+  };
+
+  const editModalhandleCancel = () => {
+    setIsEditModal(false);
+  };
+
+  const onAuthorityChange = (info) => {
+    changeUserAuthority(info).then((res) => {
+      const { data } = res;
+      if (data.code === 1300) {
+        message.success({
+          content: "修改成功",
+          duration: 3,
+        });
+        setIsEditModal(false);
+        dispatch(getUserListAction());
+      } else {
+        message.error({
+          content: "修改失败: " + data.message,
+          duration: 3,
+        });
+      }
+    });
+  };
+
+  // add
+  const showAddModal = () => {
+    setIsAddModal(true);
+  };
+
+  const addModalhandleCancel = () => {
+    setIsAddModal(false);
+  };
+
+  const addModalhandleOk = () => {
+    console.log(selectedRows);
+    // changeUserAuthority(selectedRows.map(item => Object.assign(item, {authority: authority['admin']}))).then((res) => {
+    //     const { data } = res;
+    //     if (data.code === 1300) {
+    //       message.success({
+    //         content: "新增成功",
+    //         duration: 3,
+    //       });
+    //       setIsAddModal(false);
+    //       dispatch(getUserListAction());
+    //     } else {
+    //       message.error({
+    //         content: "新增失败: " + data.message,
+    //         duration: 3,
+    //       });
+    //     }
+    //   });
+  };
+
+  const changeQueryEmail = (e) => {
+    setQueryEmail(e.target.value);
+  };
+
+  const queryEmailHandle = () => {
+    getUser({ email: queryEmail }).then((res) => {
+      const { data } = res;
+      setQueryUsers(data.users);
+    });
+  };
+
+  // Drawer
+  const showDrawer = () => {
+    setIsDrawer(true);
+  };
+
+  const drawerOnClose = () => {
+    setIsDrawer(false);
+  };
 
   const columns = [
     {
@@ -146,55 +242,14 @@ const Authority = (props) => {
     },
   ];
 
-  // Modal
-  // edit
-  const showEditModal = (record) => {
-    setIsEditModal(true);
-    setRowData(record);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
   };
 
-  const editModalhandleCancel = () => {
-    setIsEditModal(false);
-  };
-
-  const onAuthorityChange = (newAuthority) => {
-    let formData = Object.assign(rowData, { authority: newAuthority });
-    changeUserAuthority(formData).then((res) => {
-      const { data } = res;
-      if (data.code === 1300) {
-        message.success({
-          content: "修改成功",
-          duration: 3,
-        });
-        setIsEditModal(false);
-        dispatch(getUserListAction());
-      } else {
-        message.error({
-          content: "修改失败: " + data.message,
-          duration: 3,
-        });
-      }
-    });
-  };
-
-  // add
-  const showAddModal = () => {
-    setIsAddModal(true);
-  };
-
-  const addModalhandleCancel = () => {
-    setIsAddModal(false);
-  };
-
-  const changeQueryEmail = (e) => {
-    setQueryEmail(e.target.value);
-  };
-
-  const queryEmailHandle = () => {
-    getUser({ email: queryEmail }).then((res) => {
-      const { data } = res;
-      setQueryUsers(data.users);
-    });
+  const deleteSelectedRow = (row) => {
+    setSelectedRowKeys(selectedRowKeys.filter((value) => value !== row.email));
+    setSelectedRows(selectedRows.filter((value) => value !== row));
   };
 
   // JSX
@@ -216,8 +271,9 @@ const Authority = (props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={getDataSource(userList)}
+            dataSource={userList}
             bordered={true}
+            rowKey={(record) => record.email}
           />
         </SearchTableWrapper>
 
@@ -234,48 +290,34 @@ const Authority = (props) => {
             // form={editModalForm}
           >
             {Object.keys(rowData).map((item) => {
-              if (!["key"].includes(item)) {
-                if (item !== "authority") {
-                  return (
-                    <Form.Item key={item} label={transformWords[item]}>
-                      {rowData[item]}
-                    </Form.Item>
-                  );
-                } else {
-                  return (
-                    <Form.Item key={item} label={transformWords[item]}>
-                      <Select
-                        onChange={onAuthorityChange}
-                        defaultValue={re_authority[rowData[item]]}
-                      >
-                        {Object.values(authority).map((sitem) => {
-                          return parseInt(rowData[item]) !== sitem ? (
-                            <Option key={sitem} value={sitem}>
-                              {re_authority[sitem]}
-                            </Option>
-                          ) : null;
-                        })}
-                      </Select>
-                    </Form.Item>
-                  );
-                }
+              if (item !== "authority") {
+                return (
+                  <Form.Item key={item} label={transformWords[item]}>
+                    {rowData[item]}
+                  </Form.Item>
+                );
+              } else {
+                return (
+                  <Form.Item key={item} label={transformWords[item]}>
+                    <Select
+                      onChange={(newAuthority) => {
+                        rowData["authority"] = newAuthority;
+                        onAuthorityChange(rowData);
+                      }}
+                      defaultValue={re_authority[rowData[item]]}
+                    >
+                      {Object.values(authority).map((sitem) => {
+                        return parseInt(rowData[item]) !== sitem ? (
+                          <Option key={sitem} value={sitem}>
+                            {re_authority[sitem]}
+                          </Option>
+                        ) : null;
+                      })}
+                    </Select>
+                  </Form.Item>
+                );
               }
-              return null;
             })}
-            {/* {Object.keys(transformWords).map((item) => {
-              // console.log(item);
-              return (
-                <Form.Item
-                  key={item}
-                  label={transformWords[item]}
-                  name={item}
-                  rules={formRules(item)}
-                >
-                  <Input
-                  />
-                </Form.Item>
-              );
-            })} */}
           </Form>
         </Modal>
 
@@ -283,6 +325,7 @@ const Authority = (props) => {
           title="新增权限"
           visible={isAddModal}
           onCancel={addModalhandleCancel}
+          onOk={addModalhandleOk}
           cancelText="取消"
           okText="确定"
         >
@@ -291,11 +334,88 @@ const Authority = (props) => {
               placeholder={"请输入注册邮箱"}
               value={queryEmail}
               onChange={(e) => changeQueryEmail(e)}
+              onPressEnter={queryEmailHandle}
+              suffix={<EnterOutlined style={{ color: "grey" }} />}
             ></Input>
-            <Button onClick={queryEmailHandle}>查询</Button>
+
+            <Button onClick={showDrawer}>已选列表</Button>
+
+            <Tooltip
+              placement="top"
+              title={["选择为跨页选择", "默认升级到管理员"].map(
+                (item, index) => (
+                  <div>
+                    {index + 1}. {item}
+                  </div>
+                )
+              )}
+              arrowPointAtCenter
+            >
+              <QuestionCircleOutlined />
+            </Tooltip>
           </Space>
 
-          <Table columns={query_columns} dataSource={queryUsers} />
+          <Table
+            columns={query_columns}
+            dataSource={queryUsers}
+            rowKey={(record) => record.email}
+            pagination={{
+              size: "small",
+              pageSize: 5,
+              // pageSizeOptions: [5, 10],
+              // showSizeChanger: true,
+              // onShowSizeChange: onShowSizeChange,
+            }}
+            rowSelection={rowSelection}
+          />
+
+          <Drawer
+            title="已选列表"
+            closable={false}
+            onClose={drawerOnClose}
+            visible={isDrawer}
+            width={640}
+          >
+            <List
+              bordered
+              dataSource={selectedRows}
+              renderItem={(item) => (
+                <List.Item>
+                  <ListItemWrapper>
+                    <span>{item.username}</span>
+                    <span>{item.email}</span>
+                    <Space>
+                      {authorityTags[item.authority]}
+                      <RightOutlined style={{ color: "grey" }} />
+                      <Switch
+                        checkedChildren="开启"
+                        unCheckedChildren="关闭"
+                        defaultChecked
+                      />
+                      {Object.keys(re_authority)
+                        .filter(
+                          // eslint-disable-next-line
+                          (val) => val != item.authority
+                        )
+                        .map((val, index) => {
+                          //
+                        })}
+                    </Space>
+                    <DeleteOutlined
+                      style={{
+                        color: "red",
+                        fontSize: "16px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        deleteSelectedRow(item);
+                      }}
+                    />
+                  </ListItemWrapper>
+                </List.Item>
+              )}
+            />
+          </Drawer>
         </Modal>
       </ContainerWrapper>
     </Container>

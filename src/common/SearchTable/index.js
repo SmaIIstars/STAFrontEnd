@@ -5,7 +5,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { TableWrapper } from "./style";
 
 const SearchTable = memo((props) => {
-  const { columns, dataSource, bordered = false } = props;
+  const { columns, dataSource, bordered = false, rowKey = {} } = props;
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const [pageSize, setPageSize] = useState(5);
@@ -100,6 +100,7 @@ const SearchTable = memo((props) => {
         columns={columns}
         dataSource={dataSource}
         bordered={bordered}
+        rowKey={rowKey}
         pagination={{
           pageSize: pageSize,
           pageSizeOptions: [1, 3, 5, 10],

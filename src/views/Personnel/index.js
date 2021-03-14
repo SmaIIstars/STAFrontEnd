@@ -110,25 +110,21 @@ const Personnel = memo((props) => {
     {
       title: "姓名",
       dataIndex: "name",
-      key: "name",
       align: "center",
     },
     {
       title: "学位",
       dataIndex: "degree",
-      key: "degree",
       align: "center",
     },
     {
       title: "学历",
       dataIndex: "EB",
-      key: "EB",
       align: "center",
     },
     {
       title: "职称",
       dataIndex: "title",
-      key: "title",
       align: "center",
     },
   ];
@@ -140,7 +136,6 @@ const Personnel = memo((props) => {
     columns.push({
       title: "操作",
       dataIndex: "operation",
-      key: "operation",
       align: "center",
       width: "15%",
       isSearch: false,
@@ -173,12 +168,12 @@ const Personnel = memo((props) => {
     });
   }
 
-  const getDataSource = (dataSource) =>
-    dataSource
-      ? dataSource.map((item) => {
-          return Object.assign(item, { key: item.perid });
-        })
-      : null;
+  // const getDataSource = (dataSource) =>
+  //   dataSource
+  //     ? dataSource.map((item) => {
+  //         return Object.assign(item, { key: item.perid });
+  //       })
+  //     : null;
 
   const menu = (
     <Menu>
@@ -385,8 +380,9 @@ const Personnel = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={getDataSource(personnelList)}
+            dataSource={personnelList}
             bordered={true}
+            rowKey={(record) => record.perid}
           />
         </SearchTableWrapper>
 
@@ -477,26 +473,26 @@ const Personnel = memo((props) => {
             {Object.keys(rowData).map((item) => {
               // if (!["key", "id"].includes(item))
 
-              if (!["key"].includes(item)) {
-                return (
-                  // The items must have name
-                  <Form.Item
-                    key={item}
-                    label={transformWords[item]}
-                    name={item}
-                    style={item === "perid" ? { display: "none" } : null}
-                    rules={formRules(item)}
-                  >
-                    <Input
-                      disabled={item === "perid"}
-                      // onChange={(e) => {
-                      //   modalOnChange(e, item);
-                      // }}
-                    />
-                  </Form.Item>
-                );
-              }
-              return null;
+              // if (!["key"].includes(item)) {
+              return (
+                // The items must have name
+                <Form.Item
+                  key={item}
+                  label={transformWords[item]}
+                  name={item}
+                  style={item === "perid" ? { display: "none" } : null}
+                  rules={formRules(item)}
+                >
+                  <Input
+                    disabled={item === "perid"}
+                    // onChange={(e) => {
+                    //   modalOnChange(e, item);
+                    // }}
+                  />
+                </Form.Item>
+              );
+              // }
+              // return null;
             })}
           </Form>
         </Modal>

@@ -23,3 +23,10 @@ export const TitleWrapper = styled.div`
 export const DropDownWrapper = styled.div`
   margin-right: 20px;
 `;
+
+export const ListItemWrapper = styled.div`
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  align-items: center;
+`;

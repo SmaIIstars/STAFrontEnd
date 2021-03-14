@@ -95,11 +95,6 @@ const Personnel = memo((props) => {
   const [rowData, setRowData] = useState({});
 
   const [isEditModal, setIsEditModal] = useState(false);
-  // const [id, setId] = useState("");
-  // const [name, setName] = useState("");
-  // const [degree, setDegree] = useState("");
-  // const [EB, setEB] = useState("");
-  // const [title, setTitle] = useState("");
 
   const [isAddModal, setIsAddModal] = useState(false);
 
@@ -111,7 +106,6 @@ const Personnel = memo((props) => {
     {
       title: "#",
       dataIndex: "index",
-      key: "index",
       align: "center",
       isSearch: false,
       render: (text, record, index) => `${index + 1}`,
@@ -119,25 +113,21 @@ const Personnel = memo((props) => {
     {
       title: "姓名",
       dataIndex: "name",
-      key: "name",
       align: "center",
     },
     {
       title: "学位",
       dataIndex: "degree",
-      key: "degree",
       align: "center",
     },
     {
       title: "学历",
       dataIndex: "EB",
-      key: "EB",
       align: "center",
     },
     {
       title: "职称",
       dataIndex: "title",
-      key: "title",
       align: "center",
     },
   ];
@@ -181,13 +171,6 @@ const Personnel = memo((props) => {
       ),
     });
   }
-
-  const getDataSource = (dataSource) =>
-    dataSource
-      ? dataSource.map((item) => {
-          return Object.assign(item, { key: item.perid });
-        })
-      : null;
 
   const menu = (
     <Menu>
@@ -273,12 +256,6 @@ const Personnel = memo((props) => {
     setRowData(record);
     setIsEditModal(true);
 
-    // setId(record["perid"]);
-    // setName(record["name"]);
-    // setDegree(record["degree"]);
-    // setEB(record["EB"]);
-    // setTitle(record["title"]);
-
     // The setState is async
     editModalForm.setFieldsValue({
       perid: record["perid"],
@@ -326,29 +303,6 @@ const Personnel = memo((props) => {
     setIsEditModal(false);
   };
 
-  // const modalOnChange = (e, key) => {
-  //   let value = e.target.value;
-  //   switch (key) {
-  //     case "perid":
-  //       setName(id);
-  //       break;
-  //     case "name":
-  //       setName(value);
-  //       break;
-  //     case "degree":
-  //       setDegree(value);
-  //       break;
-  //     case "EB":
-  //       setEB(value);
-  //       break;
-  //     case "title":
-  //       setTitle(value);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
   // Delete Button
   const popconfirmOnConfirm = (record) => {
     deletePersonnel(record).then((res) => {
@@ -393,8 +347,9 @@ const Personnel = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={getDataSource(personnelList)}
+            dataSource={personnelList}
             bordered={true}
+            rowKey={(record) => record.perid}
           />
         </SearchTableWrapper>
 

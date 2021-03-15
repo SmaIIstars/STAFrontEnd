@@ -14,7 +14,7 @@ import {
   Tooltip,
   Drawer,
   List,
-  Switch,
+  // Switch,
 } from "antd";
 import {
   EditOutlined,
@@ -33,11 +33,17 @@ import {
   SearchTableWrapper,
   DropDownWrapper,
   ListItemWrapper,
+  TagsWrapper,
 } from "./style";
 
 import { changeUserAuthority } from "servers/authority";
 import { getUser } from "servers/user";
-import { transformWords, authority, re_authority } from "assets/local_data";
+import {
+  transformWords,
+  authority,
+  re_authority,
+  tagColors,
+} from "assets/local_data";
 
 const { Option } = Select;
 
@@ -82,18 +88,19 @@ const query_columns = [
   },
 ];
 
-const switchProps = { checkedChildren: 0, unCheckedChildren: 1 };
+// const switchProps = { checkedChildren: 0, unCheckedChildren: 1 };
 
 const Authority = (props) => {
   const dispatch = useDispatch();
   const [isEditModal, setIsEditModal] = useState(false);
-  const [isAddModal, setIsAddModal] = useState(false);
+  const [isEditAuthorityModal, setIsEditAuthorityModal] = useState(false);
   const [rowData, setRowData] = useState({});
   const [queryEmail, setQueryEmail] = useState();
   const [queryUsers, setQueryUsers] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [isDrawer, setIsDrawer] = useState(false);
+  // const [selectedTags, setSelectedTags] = useState(0);
 
   useEffect(() => {
     dispatch(getUserListAction());
@@ -111,7 +118,12 @@ const Authority = (props) => {
   const onSelectChange = (selectedRowKeys, selectedRows) => {
     setSelectedRowKeys(selectedRowKeys);
     setSelectedRows(
-      selectedRows.map((item) => Object.assign(item, { newAuthority: 1 }))
+      selectedRows.map((item) => {
+        let newAuthority = Object.values(authority).filter(
+          (val) => parseInt(item.authority) !== val
+        )[0];
+        return Object.assign(item, { newAuthority });
+      })
     );
   };
 
@@ -145,33 +157,47 @@ const Authority = (props) => {
     });
   };
 
-  // add
-  const showAddModal = () => {
-    setIsAddModal(true);
+  // EditAuthorith
+  const showEditAuthorityModal = () => {
+    setIsEditAuthorityModal(true);
+    setQueryEmail("");
+    setSelectedRows([]);
+    setSelectedRowKeys([]);
+    setQueryUsers([]);
   };
 
-  const addModalhandleCancel = () => {
-    setIsAddModal(false);
+  const editAuthorityModalhandleCancel = () => {
+    setIsEditAuthorityModal(false);
   };
 
-  const addModalhandleOk = () => {
-    console.log(selectedRows);
-    // changeUserAuthority(selectedRows.map(item => Object.assign(item, {authority: authority['admin']}))).then((res) => {
-    //     const { data } = res;
-    //     if (data.code === 1300) {
-    //       message.success({
-    //         content: "新增成功",
-    //         duration: 3,
-    //       });
-    //       setIsAddModal(false);
-    //       dispatch(getUserListAction());
-    //     } else {
-    //       message.error({
-    //         content: "新增失败: " + data.message,
-    //         duration: 3,
-    //       });
-    //     }
-    //   });
+  const tagSelectOnchange = (row, value) => {
+    setSelectedRows(
+      selectedRows.filter((item) => {
+        if (item.email === row.email)
+          return Object.assign(item, { newAuthority: authority[value] });
+        return item;
+      })
+    );
+  };
+
+  const editAuthorityModalhandleOk = () => {
+    // console.log(selectedRows);
+    changeUserAuthority(selectedRows).then((res) => {
+      const { data } = res;
+      if (data.code === 1300) {
+        message.success({
+          content: "编辑成功",
+          duration: 3,
+        });
+        setIsEditAuthorityModal(false);
+        dispatch(getUserListAction());
+      } else {
+        message.error({
+          content: "编辑失败: " + data.message,
+          duration: 3,
+        });
+      }
+    });
   };
 
   const changeQueryEmail = (e) => {
@@ -182,6 +208,7 @@ const Authority = (props) => {
     getUser({ email: queryEmail }).then((res) => {
       const { data } = res;
       setQueryUsers(data.users);
+      // setQueryUsers(data.users.filter((item) => item.email !== user.email));
     });
   };
 
@@ -259,7 +286,7 @@ const Authority = (props) => {
     rightHeader: (
       <DropDownWrapper>
         <Space>
-          <Button onClick={showAddModal}>新增权限</Button>
+          <Button onClick={showEditAuthorityModal}>批量编辑</Button>
         </Space>
       </DropDownWrapper>
     ),
@@ -322,10 +349,10 @@ const Authority = (props) => {
         </Modal>
 
         <Modal
-          title="新增权限"
-          visible={isAddModal}
-          onCancel={addModalhandleCancel}
-          onOk={addModalhandleOk}
+          title="批量编辑权限"
+          visible={isEditAuthorityModal}
+          onCancel={editAuthorityModalhandleCancel}
+          onOk={editAuthorityModalhandleOk}
           cancelText="取消"
           okText="确定"
         >
@@ -342,9 +369,9 @@ const Authority = (props) => {
 
             <Tooltip
               placement="top"
-              title={["选择为跨页选择", "默认升级到管理员"].map(
+              title={["选择为跨页选择", "默认修改到升序第一个非原权限"].map(
                 (item, index) => (
-                  <div>
+                  <div key={index}>
                     {index + 1}. {item}
                   </div>
                 )
@@ -379,41 +406,73 @@ const Authority = (props) => {
             <List
               bordered
               dataSource={selectedRows}
-              renderItem={(item) => (
-                <List.Item>
-                  <ListItemWrapper>
-                    <span>{item.username}</span>
-                    <span>{item.email}</span>
-                    <Space>
-                      {authorityTags[item.authority]}
-                      <RightOutlined style={{ color: "grey" }} />
-                      <Switch
-                        checkedChildren="开启"
-                        unCheckedChildren="关闭"
-                        defaultChecked
+              renderItem={(item) => {
+                let authority_keys = Object.keys(authority);
+
+                return (
+                  <List.Item>
+                    <ListItemWrapper>
+                      <span>{item.username}</span>
+                      <span>{item.email}</span>
+                      <Space>
+                        {authorityTags[item.authority]}
+                        <RightOutlined style={{ color: "grey" }} />
+                        <TagsWrapper {...tagColors[item.newAuthority]}>
+                          <Select
+                            style={{
+                              width: 76,
+                              ...tagColors[item.newAuthority],
+                            }}
+                            size="small"
+                            showArrow={false}
+                            defaultValue={authority_keys[item.newAuthority]}
+                            onChange={(value) => tagSelectOnchange(item, value)}
+                          >
+                            {Object.keys(authorityTags).map((sitem) => {
+                              return (
+                                <Select.Option
+                                  value={authority_keys[sitem]}
+                                  key={authority_keys[sitem]}
+                                  disabled={sitem === item.authority}
+                                >
+                                  <span
+                                    style={{
+                                      fontSize: "12px",
+                                    }}
+                                  >
+                                    {re_authority[sitem]}
+                                  </span>
+                                </Select.Option>
+                              );
+                            })}
+                          </Select>
+                        </TagsWrapper>
+                        {/* {authorityTags[item.newAuthority]} */}
+                        {/* {authorityTagsList
+                          .filter((sitem) => sitem === selectedTags)
+                          .map((sitem, index) => (
+                            <TagsWrapper
+                              key={index}
+                              onClick={() => changeTag(item)}
+                            >
+                              {authorityTags[sitem]}
+                            </TagsWrapper>
+                          ))} */}
+                      </Space>
+                      <DeleteOutlined
+                        style={{
+                          color: "red",
+                          fontSize: "16px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          deleteSelectedRow(item);
+                        }}
                       />
-                      {Object.keys(re_authority)
-                        .filter(
-                          // eslint-disable-next-line
-                          (val) => val != item.authority
-                        )
-                        .map((val, index) => {
-                          //
-                        })}
-                    </Space>
-                    <DeleteOutlined
-                      style={{
-                        color: "red",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        deleteSelectedRow(item);
-                      }}
-                    />
-                  </ListItemWrapper>
-                </List.Item>
-              )}
+                    </ListItemWrapper>
+                  </List.Item>
+                );
+              }}
             />
           </Drawer>
         </Modal>

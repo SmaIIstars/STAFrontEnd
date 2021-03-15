@@ -18,6 +18,24 @@ export const re_authority = {
   2: "超级管理员",
 };
 
+export const tagColors = {
+  0: {
+    color: "#13c2c2",
+    background: "#e6fffb",
+    borderColor: "#87e8de",
+  },
+  1: {
+    color: "#52c41a",
+    background: "#f6ffed",
+    borderColor: "#b7eb8f",
+  },
+  2: {
+    color: "#f5222d",
+    background: "#fff1f0",
+    borderColor: "#ffa39e",
+  },
+};
+
 // routes of Sider
 export const sider_routes = [
   {

@@ -30,3 +30,13 @@ export const ListItemWrapper = styled.div`
   width: 100%;
   align-items: center;
 `;
+
+export const TagsWrapper = styled.span`
+  text-align: center;
+
+  .ant-select-selector {
+    /* background: red; */
+    background: ${(props) => props.background} !important;
+    border-color: ${(props) => props.borderColor} !important;
+  }
+`;

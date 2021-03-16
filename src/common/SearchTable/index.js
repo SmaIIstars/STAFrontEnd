@@ -73,7 +73,7 @@ const SearchTable = memo((props) => {
   });
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    console.log(searchText, searchedColumn);
+    // console.log(searchText, searchedColumn, dataIndex);
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
@@ -90,7 +90,7 @@ const SearchTable = memo((props) => {
 
   columns.forEach((item) => {
     if (item.isSearch === undefined || item.isSearch === true) {
-      Object.assign(item, getColumnSearchProps(item.key));
+      Object.assign(item, getColumnSearchProps(item.dataIndex));
     }
   });
 

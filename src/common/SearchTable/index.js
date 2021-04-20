@@ -5,10 +5,18 @@ import { SearchOutlined } from "@ant-design/icons";
 import { TableWrapper } from "./style";
 
 const SearchTable = memo((props) => {
-  const { columns, dataSource, bordered = false, rowKey = {} } = props;
+  const {
+    columns,
+    dataSource,
+    bordered = false,
+    rowKey = {},
+    pagination = {
+      showSizeChanger: true,
+      defaultCurrent: 1,
+    },
+  } = props;
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const [pageSize, setPageSize] = useState(5);
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -73,7 +81,7 @@ const SearchTable = memo((props) => {
   });
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    // console.log(searchText, searchedColumn, dataIndex);
+    console.log(searchText, searchedColumn, dataIndex);
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
@@ -82,10 +90,6 @@ const SearchTable = memo((props) => {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
-  };
-
-  const onShowSizeChange = (current, pageSize) => {
-    setPageSize(pageSize);
   };
 
   columns.forEach((item) => {
@@ -102,11 +106,8 @@ const SearchTable = memo((props) => {
         bordered={bordered}
         rowKey={rowKey}
         pagination={{
-          pageSize: pageSize,
-          pageSizeOptions: [1, 3, 5, 10],
+          ...pagination,
           total: columns.size,
-          showSizeChanger: true,
-          onShowSizeChange: onShowSizeChange,
         }}
       />
     </TableWrapper>

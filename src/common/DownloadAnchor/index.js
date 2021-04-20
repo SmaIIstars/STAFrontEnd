@@ -9,11 +9,11 @@ const DowloadAnchor = (props) => {
   const download = (fileName) => {
     filesDownload(fileName).then((res) => {
       const { data } = res;
-      console.log(data);
+      // console.log(data);
 
       let blobUrl = window.URL.createObjectURL(data);
       const filename = Moment() + ".xlsx";
-      console.log(filename);
+      // console.log(filename);
       const aElement = document.createElement("a");
       document.body.appendChild(aElement);
       aElement.style.display = "none";

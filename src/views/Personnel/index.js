@@ -84,6 +84,8 @@ const Personnel = memo((props) => {
   const [isImportPage, setIsImportPage] = useState(false);
   const [isCoverPage, setIsCoverPage] = useState(false);
   const [rowData, setRowData] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   const [isEditModal, setIsEditModal] = useState(false);
   // const [id, setId] = useState("");
@@ -95,8 +97,8 @@ const Personnel = memo((props) => {
   const [isAddModal, setIsAddModal] = useState(false);
 
   useEffect(() => {
-    dispatch(getPersonnelListAction());
-  }, [dispatch]);
+    dispatch(getPersonnelListAction(currentPage, pageSize));
+  }, [dispatch, currentPage, pageSize]);
 
   const columns = [
     {
@@ -355,6 +357,14 @@ const Personnel = memo((props) => {
     dispatch(getPersonnelListAction());
   };
 
+  const onChangePagination = (page, pageSize) => {
+    setCurrentPage(page);
+  };
+
+  const onShowSizeChange = (current, pageSize) => {
+    setPageSize(pageSize);
+  };
+
   // JSX
   const HeaderObj = {
     leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
@@ -383,6 +393,12 @@ const Personnel = memo((props) => {
             dataSource={personnelList}
             bordered={true}
             rowKey={(record) => record.perid}
+            pagination={{
+              pageSizeOptions: [1, 3, 5, 10],
+              pageSize: pageSize,
+              onChange: onChangePagination,
+              onShowSizeChange: onShowSizeChange,
+            }}
           />
         </SearchTableWrapper>
 

@@ -18,9 +18,9 @@ const chageTotalAction = (res) => {
 };
 
 // getActions
-export const getPersonnelListAction = (currentPage, pageSize) => {
+export const getPersonnelListAction = (type, currentPage, pageSize) => {
   return (dispatch) => {
-    getPersonnelList(currentPage, pageSize).then((res) => {
+    getPersonnelList(type, currentPage, pageSize).then((res) => {
       const { data } = res;
 
       dispatch(changePersonnelListAction(data.data));

@@ -98,7 +98,7 @@ const Personnel = memo((props) => {
   const [isAddModal, setIsAddModal] = useState(false);
 
   useEffect(() => {
-    dispatch(getPersonnelListAction(currentPage, pageSize));
+    dispatch(getPersonnelListAction("all", currentPage, pageSize));
   }, [dispatch, currentPage, pageSize]);
 
   const columns = [
@@ -242,7 +242,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPersonnelListAction(currentPage, pageSize));
+          dispatch(getPersonnelListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -296,7 +296,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPersonnelListAction(currentPage, pageSize));
+          dispatch(getPersonnelListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -355,7 +355,7 @@ const Personnel = memo((props) => {
         });
       }
     });
-    dispatch(getPersonnelListAction(currentPage, pageSize));
+    dispatch(getPersonnelListAction("all", currentPage, pageSize));
   };
 
   const onChangePagination = (page, pageSize) => {

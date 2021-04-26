@@ -1,18 +1,24 @@
 import request from "./request";
 import { user } from "assets/local_data";
 
-export const getPersonnelList = (currentPage = 1, pageSize = 5) => {
+export const getPersonnelList = (type, currentPage = 1, pageSize = 5) => {
   const token = localStorage.getItem("token");
-  return request({
-    // method: "psot",
-    url: "api/personnel/getlist",
-    data: {},
-    params: {
-      currentPage,
-      pageSize,
-      token,
-    },
-  });
+  if (type === "all") {
+    return request({
+      url: "api/personnel/getlist",
+      params: { type, token },
+    });
+  } else {
+    return request({
+      url: "api/personnel/getlist",
+      params: {
+        type,
+        currentPage,
+        pageSize,
+        token,
+      },
+    });
+  }
 };
 
 export const changePersonnelInfo = (info) => {

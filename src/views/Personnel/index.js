@@ -76,9 +76,10 @@ const Personnel = memo((props) => {
   const [editModalForm] = Form.useForm();
   const [addModalForm] = Form.useForm();
 
-  const { personnelList } = useSelector((state) => {
+  const { personnelList, total } = useSelector((state) => {
     return {
       personnelList: state.getIn(["personnel", "personnelList"]),
+      total: state.getIn(["personnel", "total"]),
     };
   }, shallowEqual);
   const [isImportPage, setIsImportPage] = useState(false);
@@ -241,7 +242,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPersonnelListAction());
+          dispatch(getPersonnelListAction(currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -295,7 +296,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPersonnelListAction());
+          dispatch(getPersonnelListAction(currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -354,7 +355,7 @@ const Personnel = memo((props) => {
         });
       }
     });
-    dispatch(getPersonnelListAction());
+    dispatch(getPersonnelListAction(currentPage, pageSize));
   };
 
   const onChangePagination = (page, pageSize) => {
@@ -398,6 +399,7 @@ const Personnel = memo((props) => {
               pageSize: pageSize,
               onChange: onChangePagination,
               onShowSizeChange: onShowSizeChange,
+              total,
             }}
           />
         </SearchTableWrapper>

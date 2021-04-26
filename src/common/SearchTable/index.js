@@ -10,10 +10,7 @@ const SearchTable = memo((props) => {
     dataSource,
     bordered = false,
     rowKey = {},
-    pagination = {
-      showSizeChanger: true,
-      defaultCurrent: 1,
-    },
+    pagination = {},
   } = props;
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -107,7 +104,8 @@ const SearchTable = memo((props) => {
         rowKey={rowKey}
         pagination={{
           ...pagination,
-          total: columns.size,
+          showSizeChanger: true,
+          defaultCurrent: 1,
         }}
       />
     </TableWrapper>

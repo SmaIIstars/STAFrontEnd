@@ -1,6 +1,6 @@
 import { getPersonnelList } from "servers/personnel";
 
-import { CHANGE_PERSONNEL_LIST } from "./constants";
+import { CHANGE_PERSONNEL_LIST, CHANGE_TOTAL } from "./constants";
 
 // chageActions
 const changePersonnelListAction = (res) => {
@@ -10,13 +10,21 @@ const changePersonnelListAction = (res) => {
   };
 };
 
+const chageTotalAction = (res) => {
+  return {
+    type: CHANGE_TOTAL,
+    total: res,
+  };
+};
+
 // getActions
-export const getPersonnelListAction = () => {
+export const getPersonnelListAction = (currentPage, pageSize) => {
   return (dispatch) => {
-    getPersonnelList().then((res) => {
+    getPersonnelList(currentPage, pageSize).then((res) => {
       const { data } = res;
 
       dispatch(changePersonnelListAction(data.data));
+      dispatch(chageTotalAction(data.total));
     });
   };
 };

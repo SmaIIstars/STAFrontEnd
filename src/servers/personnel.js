@@ -1,13 +1,16 @@
 import request from "./request";
 import { user } from "assets/local_data";
 
-export const getPersonnelList = () => {
+export const getPersonnelList = (currentPage = 1, pageSize = 5) => {
   const token = localStorage.getItem("token");
   return request({
-    method: "post",
+    // method: "psot",
     url: "api/personnel/getlist",
-    data: {
-      token: token,
+    data: {},
+    params: {
+      currentPage,
+      pageSize,
+      token,
     },
   });
 };

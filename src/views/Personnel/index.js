@@ -96,6 +96,7 @@ const Personnel = memo((props) => {
   // const [title, setTitle] = useState("");
 
   const [isAddModal, setIsAddModal] = useState(false);
+  const isAuthority = localStorage.getItem("authority") > authority.guest;
 
   useEffect(() => {
     dispatch(getPersonnelListAction("all", currentPage, pageSize));
@@ -132,10 +133,7 @@ const Personnel = memo((props) => {
     },
   ];
 
-  if (
-    localStorage.getItem("authority") > authority.guest &&
-    !columns.find((item) => item.key === "operation")
-  ) {
+  if (isAuthority && !columns.find((item) => item.key === "operation")) {
     columns.push({
       title: "操作",
       dataIndex: "operation",
@@ -370,7 +368,7 @@ const Personnel = memo((props) => {
   const HeaderObj = {
     leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
-    rightHeader: (
+    rightHeader: isAuthority ? (
       <DropDownWrapper>
         <Space>
           <Dropdown overlay={menu}>
@@ -382,7 +380,7 @@ const Personnel = memo((props) => {
           <Button onClick={showAddModal}>新增数据</Button>
         </Space>
       </DropDownWrapper>
-    ),
+    ) : null,
   };
 
   return (
@@ -400,6 +398,7 @@ const Personnel = memo((props) => {
               onChange: onChangePagination,
               onShowSizeChange: onShowSizeChange,
               total,
+              position: ["topleft"],
             }}
           />
         </SearchTableWrapper>
@@ -408,10 +407,12 @@ const Personnel = memo((props) => {
           ModalProps={{
             isVisible: isImportPage,
             title: "新增数据",
-            cancel: () => {
-              uploadHandleCancel("import");
-            },
-            oK: () => {},
+            cancel: () => uploadHandleCancel("import"),
+            // footer: [
+            //   <Button key="back" onClick={() => uploadHandleCancel("import")}>
+            //     取消
+            //   </Button>,
+            // ],
           }}
           UploadProps={{
             accept: ".xlsx",
@@ -459,12 +460,12 @@ const Personnel = memo((props) => {
             form={addModalForm}
             // validateMessages={validateMessages}
           >
-            {Object.keys(transformWords).map((item) => {
+            {Object.keys(transformWords.personnel).map((item) => {
               // console.log(item);
               return (
                 <Form.Item
                   key={item}
-                  label={transformWords[item]}
+                  label={transformWords.personnel[item]}
                   name={item}
                   rules={formRules(item)}
                 >
@@ -496,7 +497,7 @@ const Personnel = memo((props) => {
                 // The items must have name
                 <Form.Item
                   key={item}
-                  label={transformWords[item]}
+                  label={transformWords.personnel[item]}
                   name={item}
                   style={item === "perid" ? { display: "none" } : null}
                   rules={formRules(item)}

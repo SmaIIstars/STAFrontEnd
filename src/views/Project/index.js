@@ -43,14 +43,6 @@ const formLayout = {
   },
 };
 
-/* eslint-disable */
-// const validateMessages = {
-//   required: "${label} 不能为空!",
-//   types: {
-//     email: "'${label}' 格式不正确!",
-//   },
-// };
-
 const formRules = (value) => {
   switch (value) {
     case "name":
@@ -78,34 +70,43 @@ const formRules = (value) => {
   }
 };
 
-const Personnel = memo((props) => {
+const Project = memo((props) => {
   const dispatch = useDispatch();
   // It's a Array
   const [editModalForm] = Form.useForm();
   const [addModalForm] = Form.useForm();
 
-  const { personnelList } = useSelector(
-    (state) => ({
+  const { personnelList, total } = useSelector((state) => {
+    return {
       personnelList: state.getIn(["personnel", "personnelList"]),
-    }),
-    shallowEqual
-  );
+      total: state.getIn(["personnel", "total"]),
+    };
+  }, shallowEqual);
   const [isImportPage, setIsImportPage] = useState(false);
   const [isCoverPage, setIsCoverPage] = useState(false);
   const [rowData, setRowData] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   const [isEditModal, setIsEditModal] = useState(false);
+  // const [id, setId] = useState("");
+  // const [name, setName] = useState("");
+  // const [degree, setDegree] = useState("");
+  // const [EB, setEB] = useState("");
+  // const [title, setTitle] = useState("");
 
   const [isAddModal, setIsAddModal] = useState(false);
+  const isAuthority = localStorage.getItem("authority") > authority.guest;
 
   useEffect(() => {
-    dispatch(getPersonnelListAction());
-  }, [dispatch]);
+    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+  }, [dispatch, currentPage, pageSize]);
 
   const columns = [
     {
       title: "#",
       dataIndex: "index",
+      key: "index",
       align: "center",
       isSearch: false,
       render: (text, record, index) => `${index + 1}`,
@@ -132,14 +133,10 @@ const Personnel = memo((props) => {
     },
   ];
 
-  if (
-    localStorage.getItem("authority") > authority.guest &&
-    !columns.find((item) => item.key === "operation")
-  ) {
+  if (isAuthority && !columns.find((item) => item.key === "operation")) {
     columns.push({
       title: "操作",
       dataIndex: "operation",
-      key: "operation",
       align: "center",
       width: "15%",
       isSearch: false,
@@ -171,6 +168,13 @@ const Personnel = memo((props) => {
       ),
     });
   }
+
+  // const getDataSource = (dataSource) =>
+  //   dataSource
+  //     ? dataSource.map((item) => {
+  //         return Object.assign(item, { key: item.perid });
+  //       })
+  //     : null;
 
   const menu = (
     <Menu>
@@ -204,6 +208,7 @@ const Personnel = memo((props) => {
   };
 
   // Modal
+
   // Add Modal
   const addModalhandleReset = () => {
     addModalForm.resetFields();
@@ -225,7 +230,7 @@ const Personnel = memo((props) => {
     );
 
     if (
-      values.filter((item) => [undefined, null, ""].includes(item)).length == 0
+      values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
       addPersonnel(formData).then((res) => {
         const { data } = res;
@@ -235,7 +240,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPersonnelListAction());
+          dispatch(getPersonnelListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -256,6 +261,12 @@ const Personnel = memo((props) => {
     setRowData(record);
     setIsEditModal(true);
 
+    // setId(record["perid"]);
+    // setName(record["name"]);
+    // setDegree(record["degree"]);
+    // setEB(record["EB"]);
+    // setTitle(record["title"]);
+
     // The setState is async
     editModalForm.setFieldsValue({
       perid: record["perid"],
@@ -273,7 +284,7 @@ const Personnel = memo((props) => {
     );
 
     if (
-      values.filter((item) => [undefined, null, ""].includes(item)).length == 0
+      values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
       changePersonnelInfo(formData).then((res) => {
         const { data } = res;
@@ -283,7 +294,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPersonnelListAction());
+          dispatch(getPersonnelListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -303,6 +314,29 @@ const Personnel = memo((props) => {
     setIsEditModal(false);
   };
 
+  // const modalOnChange = (e, key) => {
+  //   let value = e.target.value;
+  //   switch (key) {
+  //     case "perid":
+  //       setName(id);
+  //       break;
+  //     case "name":
+  //       setName(value);
+  //       break;
+  //     case "degree":
+  //       setDegree(value);
+  //       break;
+  //     case "EB":
+  //       setEB(value);
+  //       break;
+  //     case "title":
+  //       setTitle(value);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+
   // Delete Button
   const popconfirmOnConfirm = (record) => {
     deletePersonnel(record).then((res) => {
@@ -319,14 +353,22 @@ const Personnel = memo((props) => {
         });
       }
     });
-    dispatch(getPersonnelListAction());
+    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+  };
+
+  const onChangePagination = (page, pageSize) => {
+    setCurrentPage(page);
+  };
+
+  const onShowSizeChange = (current, pageSize) => {
+    setPageSize(pageSize);
   };
 
   // JSX
   const HeaderObj = {
     leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
-    rightHeader: (
+    rightHeader: isAuthority ? (
       <DropDownWrapper>
         <Space>
           <Dropdown overlay={menu}>
@@ -338,7 +380,7 @@ const Personnel = memo((props) => {
           <Button onClick={showAddModal}>新增数据</Button>
         </Space>
       </DropDownWrapper>
-    ),
+    ) : null,
   };
 
   return (
@@ -350,6 +392,14 @@ const Personnel = memo((props) => {
             dataSource={personnelList}
             bordered={true}
             rowKey={(record) => record.perid}
+            pagination={{
+              pageSizeOptions: [1, 3, 5, 10],
+              pageSize: pageSize,
+              onChange: onChangePagination,
+              onShowSizeChange: onShowSizeChange,
+              total,
+              position: ["topleft"],
+            }}
           />
         </SearchTableWrapper>
 
@@ -357,10 +407,12 @@ const Personnel = memo((props) => {
           ModalProps={{
             isVisible: isImportPage,
             title: "新增数据",
-            cancel: () => {
-              uploadHandleCancel("import");
-            },
-            oK: () => {},
+            cancel: () => uploadHandleCancel("import"),
+            // footer: [
+            //   <Button key="back" onClick={() => uploadHandleCancel("import")}>
+            //     取消
+            //   </Button>,
+            // ],
           }}
           UploadProps={{
             accept: ".xlsx",
@@ -408,12 +460,12 @@ const Personnel = memo((props) => {
             form={addModalForm}
             // validateMessages={validateMessages}
           >
-            {Object.keys(transformWords).map((item) => {
+            {Object.keys(transformWords.personnel).map((item) => {
               // console.log(item);
               return (
                 <Form.Item
                   key={item}
-                  label={transformWords[item]}
+                  label={transformWords.personnel[item]}
                   name={item}
                   rules={formRules(item)}
                 >
@@ -440,26 +492,26 @@ const Personnel = memo((props) => {
             {Object.keys(rowData).map((item) => {
               // if (!["key", "id"].includes(item))
 
-              if (!["key"].includes(item)) {
-                return (
-                  // The items must have name
-                  <Form.Item
-                    key={item}
-                    label={transformWords[item]}
-                    name={item}
-                    style={item === "perid" ? { display: "none" } : null}
-                    rules={formRules(item)}
-                  >
-                    <Input
-                      disabled={item === "perid"}
-                      // onChange={(e) => {
-                      //   modalOnChange(e, item);
-                      // }}
-                    />
-                  </Form.Item>
-                );
-              }
-              return null;
+              // if (!["key"].includes(item)) {
+              return (
+                // The items must have name
+                <Form.Item
+                  key={item}
+                  label={transformWords.personnel[item]}
+                  name={item}
+                  style={item === "perid" ? { display: "none" } : null}
+                  rules={formRules(item)}
+                >
+                  <Input
+                    disabled={item === "perid"}
+                    // onChange={(e) => {
+                    //   modalOnChange(e, item);
+                    // }}
+                  />
+                </Form.Item>
+              );
+              // }
+              // return null;
             })}
           </Form>
         </Modal>
@@ -468,4 +520,4 @@ const Personnel = memo((props) => {
   );
 });
 
-export default Personnel;
+export default Project;

@@ -12,7 +12,7 @@ import "assets/local_data.js";
 import { MainLayout } from "./style";
 import Sider from "views/layout/Sider";
 import Header from "views/layout/Header";
-import Footer from "views/layout/Footer";
+// import Footer from "views/layout/Footer";
 import Login from "views/Login";
 import Register from "./views/Register";
 
@@ -48,7 +48,8 @@ const App = memo(function App(props) {
               <Header />
               <Spin spinning={loading} wrapperClassName="page-loading">
                 <Content>{renderRoutes(mainRoutes)}</Content>
-                <Footer />
+                {/* Copyright */}
+                {/* <Footer /> */}
               </Spin>
             </Layout>
           </Layout>

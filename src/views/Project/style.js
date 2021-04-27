@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const ContainerWrapper = styled.div`
   background-color: #fff;
-  height: 100%;
+  min-height: calc(100vh - 152px);
   margin: 20px;
 `;
 

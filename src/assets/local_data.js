@@ -80,17 +80,21 @@ export const layout_header_dropdown_items = [
 // Chinese-English
 export const transformWords = {
   // personnel
-  perid: "学号",
-  name: "名字",
-  degree: "学位",
-  EB: "学历",
-  title: "职称",
+  personnel: {
+    perid: "学号",
+    name: "名字",
+    degree: "学位",
+    EB: "学历",
+    title: "职称",
+  },
 
   // authority
-  email: "邮箱",
-  username: "用户名",
-  authority: "权限",
-  key: "关键词",
+  authority: {
+    email: "邮箱",
+    username: "用户名",
+    authority: "权限",
+    key: "关键词",
+  },
 };
 
 // User Info

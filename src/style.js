@@ -21,4 +21,9 @@ export const MainLayout = styled.div`
   .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
     background-color: #1f1f1f;
   }
+
+  .ant-spin-container,
+  .ant-layout-content {
+    height: 100%;
+  }
 `;

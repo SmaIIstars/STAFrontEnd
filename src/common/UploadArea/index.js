@@ -1,10 +1,10 @@
-import React, { memo } from "react";
+import React, { memo, forwardRef } from "react";
 import { Upload, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 
 const { Dragger } = Upload;
 
-const UploadArea = (props) => {
+const UploadArea = forwardRef((props, ref) => {
   const { UploadProps = {}, TipText = ".xlsx" } = props;
   const {
     name = "file",
@@ -21,7 +21,7 @@ const UploadArea = (props) => {
     onChange = (info) => {
       const { status } = info.file;
       if (status !== "uploading") {
-        console.log(status, info.fileList);
+        console.log(info, info.fileList);
       }
       if (status === "done") {
         message.success(`${info.file.name} 文件上传成功!`);
@@ -63,8 +63,11 @@ const UploadArea = (props) => {
     transformFile: (file) => file,
   };
 
+  // console.log(Upload.fileList);
+  // console.log(ref);
+
   return (
-    <Dragger {...uploadprops}>
+    <Dragger {...uploadprops} ref={ref}>
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
       </p>
@@ -72,6 +75,6 @@ const UploadArea = (props) => {
       <p className="ant-upload-text">{TipText}</p>
     </Dragger>
   );
-};
+});
 
 export default memo(UploadArea);

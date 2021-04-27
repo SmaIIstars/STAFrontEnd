@@ -8,7 +8,7 @@ const Footer = memo((props) => {
   return (
     <Footer>
       <CopyRight>
-        <span>STA ©2020 Created by Small Stars</span>
+        {/* <span>STA ©2020 Created by Small Stars</span> */}
       </CopyRight>
     </Footer>
   );

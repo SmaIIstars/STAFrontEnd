@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect, useCallback } from "react";
 import { Table, Input, Button, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -11,77 +11,122 @@ const SearchTable = memo((props) => {
     bordered = false,
     rowKey = {},
     pagination = {},
+    defaultSearchText = "",
+    defaultSearchedColumn = "",
   } = props;
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
+  const [searchText, setSearchText] = useState(defaultSearchText);
+  const [searchedColumn, setSearchedColumn] = useState(defaultSearchedColumn);
 
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ width: 188, marginBottom: 8, display: "block" }}
-        />
+  const getIsSearchItems = (arr) =>
+    arr.filter((item) => item.isSearch !== false);
+  const isSearchItems = useCallback(() => getIsSearchItems(columns), [columns]);
 
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<i className="fa fa-search" aria-hidden="true"></i>}
-            size="small"
-            style={{ width: 90 }}
-          >
-            搜索
-          </Button>
+  /* eslint-disable */
+  useEffect(() => {
+    if (searchText !== "") {
+      let index = isSearchItems.findIndex(
+        (item) => item.dataIndex === defaultSearchedColumn
+      );
+      let b = document.getElementsByClassName("ant-table-filter-trigger")[
+        index
+      ];
+      b && b.click();
 
-          <Button
-            onClick={() => handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            重置
-          </Button>
-        </Space>
-      </div>
-    ),
+      // console.log(document.getElementById("searchButton"));
+    }
 
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? record[dataIndex]
-            .toString()
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        : "",
+    return;
+  }, []);
 
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1890ff" : undefined,
-        }}
-      />
-    ),
+  const getColumnSearchProps = (dataIndex) => {
+    return {
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm = () => ({
+          closeDropdown: false,
+        }),
+        clearFilters,
+      }) => {
+        if (selectedKeys[0] !== searchText) {
+          setSelectedKeys([searchText]);
+          // console.log(searchText, selectedKeys);
+        }
 
-    // Overwrite custom render, If not, we can't search.
-    render: (dataIndex) => {
-      return dataIndex;
-    },
-  });
+        return (
+          <div style={{ padding: 8 }}>
+            <Input
+              placeholder={`搜索条目`}
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                setSelectedKeys(e.target.value ? [e.target.value] : []);
+              }}
+              onPressEnter={() => {
+                setSelectedKeys([searchText]);
+
+                handleSearch(selectedKeys, confirm, dataIndex);
+              }}
+              style={{ width: 188, marginBottom: 8, display: "block" }}
+              ref={(input) => input && input.focus()}
+            />
+
+            <Space>
+              <Button
+                id="searchButton"
+                type="primary"
+                onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                // icon={<i className="fa fa-search" aria-hidden="true"></i>}
+                size="small"
+                style={{ width: 90 }}
+              >
+                搜索
+              </Button>
+
+              <Button
+                onClick={() => handleReset(clearFilters)}
+                size="small"
+                style={{ width: 90 }}
+              >
+                重置
+              </Button>
+            </Space>
+          </div>
+        );
+      },
+
+      onFilter: (value, record) =>
+        record[dataIndex]
+          ? record[dataIndex]
+              .toString()
+              .toLowerCase()
+              .includes(value.toLowerCase())
+          : "",
+
+      filterIcon: (filtered) => {
+        return (
+          <SearchOutlined
+            style={{
+              color: filtered ? "#1890ff" : undefined,
+            }}
+          />
+        );
+      },
+
+      // Overwrite custom render, If not, we can't search.
+      render: (dataIndex) => {
+        return dataIndex;
+      },
+    };
+  };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    console.log(searchText, searchedColumn, dataIndex);
-    confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
+
+    // console.log(selectedKeys, dataIndex);
+
+    confirm();
   };
 
   const handleReset = (clearFilters) => {

@@ -115,6 +115,9 @@ const Personnel = memo((props) => {
       title: "姓名",
       dataIndex: "name",
       align: "center",
+      render: (text, record, index) => {
+        return <a href="/">{text}</a>;
+      },
     },
     {
       title: "学位",

@@ -70,7 +70,7 @@ const formRules = (value) => {
   }
 };
 
-const Project = memo((props) => {
+const Personnel = memo((props) => {
   const dispatch = useDispatch();
   // It's a Array
   const [editModalForm] = Form.useForm();
@@ -115,6 +115,9 @@ const Project = memo((props) => {
       title: "姓名",
       dataIndex: "name",
       align: "center",
+      render: (text, record, index) => {
+        return <a href="/">{text}</a>;
+      },
     },
     {
       title: "学位",
@@ -520,4 +523,4 @@ const Project = memo((props) => {
   );
 });
 
-export default Project;
+export default Personnel;

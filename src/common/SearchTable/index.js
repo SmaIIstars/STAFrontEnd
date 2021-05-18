@@ -15,7 +15,7 @@ const SearchTable = memo((props) => {
     defaultSearchedColumn = "",
   } = props;
   const [searchText, setSearchText] = useState(defaultSearchText);
-  const [searchedColumn, setSearchedColumn] = useState(defaultSearchedColumn);
+  // const [searchedColumn, setSearchedColumn] = useState(defaultSearchedColumn);
 
   const getIsSearchItems = (arr) =>
     arr.filter((item) => item.isSearch !== false);
@@ -38,7 +38,9 @@ const SearchTable = memo((props) => {
     return;
   }, []);
 
-  const getColumnSearchProps = (dataIndex) => {
+  const getColumnSearchProps = (dataIndex, render) => {
+    // console.log(dataIndex);
+
     return {
       filterDropdown: ({
         setSelectedKeys,
@@ -57,7 +59,7 @@ const SearchTable = memo((props) => {
           <div style={{ padding: 8 }}>
             <Input
               placeholder={`搜索条目`}
-              value={searchText}
+              value={setSelectedKeys[0]}
               onChange={(e) => {
                 setSearchText(e.target.value);
                 setSelectedKeys(e.target.value ? [e.target.value] : []);
@@ -114,15 +116,17 @@ const SearchTable = memo((props) => {
       },
 
       // Overwrite custom render, If not, we can't search.
-      render: (dataIndex) => {
-        return dataIndex;
-      },
+      render: render
+        ? render
+        : (dataIndex) => {
+            return dataIndex;
+          },
     };
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
+    // setSearchedColumn(dataIndex);
 
     // console.log(selectedKeys, dataIndex);
 
@@ -136,7 +140,7 @@ const SearchTable = memo((props) => {
 
   columns.forEach((item) => {
     if (item.isSearch === undefined || item.isSearch === true) {
-      Object.assign(item, getColumnSearchProps(item.dataIndex));
+      Object.assign(item, getColumnSearchProps(item.dataIndex, item.render));
     }
   });
 

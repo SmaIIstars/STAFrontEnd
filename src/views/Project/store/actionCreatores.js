@@ -1,11 +1,11 @@
-import { getPersonnelList } from "servers/personnel";
+import { getProjectList } from "servers/project";
 
-import { CHANGE_PERSONNEL_LIST, CHANGE_TOTAL } from "./constants";
+import { CHANGE_PROJECT_LIST, CHANGE_TOTAL } from "./constants";
 
 // chageActions
-const changePersonnelListAction = (res) => {
+const changeProjectListAction = (res) => {
   return {
-    type: CHANGE_PERSONNEL_LIST,
+    type: CHANGE_PROJECT_LIST,
     personnelList: res,
   };
 };
@@ -18,12 +18,12 @@ const chageTotalAction = (res) => {
 };
 
 // getActions
-export const getPersonnelListAction = (type, currentPage, pageSize) => {
+export const getProjectListAction = (type, currentPage, pageSize) => {
   return (dispatch) => {
-    getPersonnelList(type, currentPage, pageSize).then((res) => {
+    getProjectList(type, currentPage, pageSize).then((res) => {
       const { data } = res;
 
-      dispatch(changePersonnelListAction(data.data));
+      dispatch(changeProjectListAction(data.data));
       dispatch(chageTotalAction(data.total));
     });
   };

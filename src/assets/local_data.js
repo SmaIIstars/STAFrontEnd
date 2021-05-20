@@ -95,6 +95,34 @@ export const transformWords = {
     authority: "权限",
     key: "关键词",
   },
+
+  // project
+  project: {
+    proid: "项目编号",
+    name: "项目名称",
+    year: "年度",
+    category: "类别",
+    header: "项目负责人",
+    member: "项目成员",
+    st: "开始时间",
+    et: "结束时间",
+    uu: "承担单位",
+    pf: "项目经费",
+    gu: "拨款单位",
+  },
+
+  paper: {
+    paperid: "论文编号",
+    papername: "论文名称",
+    paperfa: "第一作者",
+    paperca: "通讯作者",
+    paperpt: "发表时间",
+    paperpn: "发表刊物名称",
+    papervp: "卷号/期号",
+    papersp: "开始页码",
+    paperep: "截止页码",
+    paperct: "收录类型",
+  },
 };
 
 // User Info

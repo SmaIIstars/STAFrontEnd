@@ -1,0 +1,2 @@
+export const CHANGE_PAPER_LIST = "CHANGE_PAPER_LIST";
+export const CHANGE_TOTAL = "CHANGE_TOTAL";

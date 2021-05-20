@@ -13,12 +13,8 @@ import {
 } from "antd";
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { getPersonnelListAction } from "./store/actionCreatores";
-import {
-  changePersonnelInfo,
-  deletePersonnel,
-  addPersonnel,
-} from "servers/personnel";
+import { getPaperListAction } from "./store/actionCreatores";
+import { changePaperInfo, deletePaper, addPaper } from "servers/paper";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -45,41 +41,37 @@ const formLayout = {
 
 const formRules = (value) => {
   switch (value) {
+    case "proid":
     case "name":
-    case "degree":
-    case "EB":
-    case "title":
+    case "uu":
+    case "header":
+    case "category":
+    case "year":
+    case "member":
+    case "st":
+    case "et":
+    case "pf":
+    case "gu":
       return [
         {
           required: true,
         },
       ];
-    case "perid":
-      return [
-        {
-          required: true,
-        },
-        {
-          len: 12,
-          // message: "学号 格式不正确!",
-        },
-      ];
-
     default:
       return null;
   }
 };
 
-const Personnel = memo((props) => {
+const Paper = memo((props) => {
   const dispatch = useDispatch();
   // It's a Array
   const [editModalForm] = Form.useForm();
   const [addModalForm] = Form.useForm();
 
-  const { personnelList, total } = useSelector((state) => {
+  const { paperList, total } = useSelector((state) => {
     return {
-      personnelList: state.getIn(["personnel", "personnelList"]),
-      total: state.getIn(["personnel", "total"]),
+      paperList: state.getIn(["paper", "paperList"]),
+      total: state.getIn(["paper", "total"]),
     };
   }, shallowEqual);
   const [isImportPage, setIsImportPage] = useState(false);
@@ -99,7 +91,7 @@ const Personnel = memo((props) => {
   const isAuthority = localStorage.getItem("authority") > authority.guest;
 
   useEffect(() => {
-    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+    dispatch(getPaperListAction("all", currentPage, pageSize));
   }, [dispatch, currentPage, pageSize]);
 
   const columns = [
@@ -112,30 +104,29 @@ const Personnel = memo((props) => {
       render: (text, record, index) => `${index + 1}`,
     },
     {
-      title: "姓名",
+      title: "项目名称",
       dataIndex: "name",
       align: "center",
-      render: (text, record, index) => {
-        return <a href="/">{text}</a>;
-      },
+      // render: (text, record, index) => {
+      //   return <a href="/">{text}</a>;
+      // },
     },
     {
-      title: "学位",
-      dataIndex: "degree",
+      title: "类别",
+      dataIndex: "category",
       align: "center",
     },
     {
-      title: "学历",
-      dataIndex: "EB",
+      title: "项目负责人",
+      dataIndex: "header",
       align: "center",
     },
     {
-      title: "职称",
-      dataIndex: "title",
+      title: "承担单位",
+      dataIndex: "uu",
       align: "center",
     },
   ];
-
   if (isAuthority && !columns.find((item) => item.key === "operation")) {
     columns.push({
       title: "操作",
@@ -182,7 +173,7 @@ const Personnel = memo((props) => {
   const menu = (
     <Menu>
       <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="personnel" />
+        <DownloadAnchor text={"下载模板"} fileName="project" />
       </Menu.Item>
 
       <Menu.Item>
@@ -208,7 +199,7 @@ const Personnel = memo((props) => {
       default:
         break;
     }
-    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+    dispatch(getPaperListAction("all", currentPage, pageSize));
   };
 
   // Modal
@@ -236,7 +227,7 @@ const Personnel = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      addPersonnel(formData).then((res) => {
+      addPaper(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -244,7 +235,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPersonnelListAction("all", currentPage, pageSize));
+          dispatch(getPaperListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -265,19 +256,13 @@ const Personnel = memo((props) => {
     setRowData(record);
     setIsEditModal(true);
 
-    // setId(record["perid"]);
-    // setName(record["name"]);
-    // setDegree(record["degree"]);
-    // setEB(record["EB"]);
-    // setTitle(record["title"]);
-
     // The setState is async
     editModalForm.setFieldsValue({
-      perid: record["perid"],
+      proid: record["proid"],
       name: record["name"],
-      degree: record["degree"],
-      EB: record["EB"],
-      title: record["title"],
+      category: record["category"],
+      header: record["header"],
+      uu: record["uu"],
     });
   };
 
@@ -286,11 +271,12 @@ const Personnel = memo((props) => {
     let values = Object.values(formData).map((item) =>
       item ? item.trim() : item
     );
+    console.log(values);
 
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      changePersonnelInfo(formData).then((res) => {
+      changePaperInfo(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -298,7 +284,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPersonnelListAction("all", currentPage, pageSize));
+          dispatch(getPaperListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -318,32 +304,9 @@ const Personnel = memo((props) => {
     setIsEditModal(false);
   };
 
-  // const modalOnChange = (e, key) => {
-  //   let value = e.target.value;
-  //   switch (key) {
-  //     case "perid":
-  //       setName(id);
-  //       break;
-  //     case "name":
-  //       setName(value);
-  //       break;
-  //     case "degree":
-  //       setDegree(value);
-  //       break;
-  //     case "EB":
-  //       setEB(value);
-  //       break;
-  //     case "title":
-  //       setTitle(value);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
   // Delete Button
   const popconfirmOnConfirm = (record) => {
-    deletePersonnel(record).then((res) => {
+    deletePaper(record).then((res) => {
       const { data } = res;
       if (data.code === 1200) {
         message.success({
@@ -357,7 +320,7 @@ const Personnel = memo((props) => {
         });
       }
     });
-    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+    dispatch(getPaperListAction("all", currentPage, pageSize));
   };
 
   const onChangePagination = (page, pageSize) => {
@@ -370,7 +333,7 @@ const Personnel = memo((props) => {
 
   // JSX
   const HeaderObj = {
-    leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
+    leftHeader: <TitleWrapper>项目列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
     rightHeader: isAuthority ? (
       <DropDownWrapper>
@@ -393,9 +356,9 @@ const Personnel = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={personnelList}
+            dataSource={paperList}
             bordered={true}
-            rowKey={(record) => record.perid}
+            rowKey={(record) => record.proid}
             pagination={{
               pageSizeOptions: [10, 15, 20],
               pageSize: pageSize,
@@ -412,15 +375,10 @@ const Personnel = memo((props) => {
             isVisible: isImportPage,
             title: "新增数据",
             cancel: () => uploadHandleCancel("import"),
-            // footer: [
-            //   <Button key="back" onClick={() => uploadHandleCancel("import")}>
-            //     取消
-            //   </Button>,
-            // ],
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/import?type=personnel",
+            action: "api/files/upload/import?type=paper",
           }}
         />
 
@@ -431,11 +389,10 @@ const Personnel = memo((props) => {
             cancel: () => {
               uploadHandleCancel("cover");
             },
-            oK: () => {},
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/cover?type=personnel",
+            action: "api/files/upload/cover?type=paper",
           }}
         />
 
@@ -464,12 +421,12 @@ const Personnel = memo((props) => {
             form={addModalForm}
             // validateMessages={validateMessages}
           >
-            {Object.keys(transformWords.personnel).map((item) => {
+            {Object.keys(transformWords.paper).map((item) => {
               // console.log(item);
               return (
                 <Form.Item
                   key={item}
-                  label={transformWords.personnel[item]}
+                  label={transformWords.paper[item]}
                   name={item}
                   rules={formRules(item)}
                 >
@@ -494,28 +451,18 @@ const Personnel = memo((props) => {
         >
           <Form {...formLayout} name={"editModal"} form={editModalForm}>
             {Object.keys(rowData).map((item) => {
-              // if (!["key", "id"].includes(item))
-
-              // if (!["key"].includes(item)) {
               return (
                 // The items must have name
                 <Form.Item
                   key={item}
-                  label={transformWords.personnel[item]}
+                  label={transformWords.paper[item]}
                   name={item}
-                  style={item === "perid" ? { display: "none" } : null}
+                  style={item === "proid" ? { display: "none" } : null}
                   rules={formRules(item)}
                 >
-                  <Input
-                    disabled={item === "perid"}
-                    // onChange={(e) => {
-                    //   modalOnChange(e, item);
-                    // }}
-                  />
+                  <Input disabled={item === "proid"} />
                 </Form.Item>
               );
-              // }
-              // return null;
             })}
           </Form>
         </Modal>
@@ -524,4 +471,4 @@ const Personnel = memo((props) => {
   );
 });
 
-export default Personnel;
+export default Paper;

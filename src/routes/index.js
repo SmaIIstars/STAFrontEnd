@@ -4,6 +4,9 @@ import Personnel from "../views/Personnel";
 import Project from "../views/Project";
 import Paper from "../views/Paper";
 import Patent from "../views/Patent";
+import Monograph from "../views/Monograph";
+import SRTA from "../views/SRTA";
+import Meeting from "../views/Meeting";
 
 import Authority from "../views/Authority";
 
@@ -30,6 +33,21 @@ const mainRoutes = [
   {
     path: "/patent",
     component: Patent,
+  },
+
+  {
+    path: "/monograph",
+    component: Monograph,
+  },
+
+  {
+    path: "/srta",
+    component: SRTA,
+  },
+
+  {
+    path: "/meeting",
+    component: Meeting,
   },
 
   {

@@ -111,14 +111,15 @@ const Project = memo((props) => {
       //   return <a href="/">{text}</a>;
       // },
     },
-    {
-      title: "类别",
-      dataIndex: "category",
-      align: "center",
-    },
+
     {
       title: "项目负责人",
       dataIndex: "header",
+      align: "center",
+    },
+    {
+      title: "成员",
+      dataIndex: "member",
       align: "center",
     },
     {

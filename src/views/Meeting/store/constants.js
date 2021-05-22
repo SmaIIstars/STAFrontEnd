@@ -1,0 +1,2 @@
+export const CHANGE_MEETING_LIST = "CHANGE_MEETING_LIST";
+export const CHANGE_TOTAL = "CHANGE_TOTAL";

@@ -10,12 +10,15 @@ import {
   Form,
   Popconfirm,
   message,
-  Tag,
 } from "antd";
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { getPatentListAction } from "./store/actionCreatores";
-import { changePatentInfo, deletePatent, addPatent } from "servers/patent";
+import { getMonographListAction } from "./store/actionCreatores";
+import {
+  changeMonographInfo,
+  deleteMonograph,
+  addMonograph,
+} from "servers/monograph";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -44,12 +47,9 @@ const formRules = (value) => {
   switch (value) {
     case "id":
     case "name":
-    case "applicant":
-    case "type":
-    case "da":
-    case "ie":
-    case "apc":
-    case "auc":
+    case "author":
+    case "press":
+    case "dp":
       return [
         {
           required: true,
@@ -60,16 +60,16 @@ const formRules = (value) => {
   }
 };
 
-const Patent = memo((props) => {
+const Monograph = memo((props) => {
   const dispatch = useDispatch();
   // It's a Array
   const [editModalForm] = Form.useForm();
   const [addModalForm] = Form.useForm();
 
-  const { patentList, total } = useSelector((state) => {
+  const { monographList, total } = useSelector((state) => {
     return {
-      patentList: state.getIn(["patent", "patentList"]),
-      total: state.getIn(["patent", "total"]),
+      monographList: state.getIn(["monograph", "monographList"]),
+      total: state.getIn(["monograph", "total"]),
     };
   }, shallowEqual);
 
@@ -84,7 +84,7 @@ const Patent = memo((props) => {
   const isAuthority = localStorage.getItem("authority") > authority.guest;
 
   useEffect(() => {
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getMonographListAction("all", currentPage, pageSize));
   }, [dispatch, currentPage, pageSize]);
 
   const columns = [
@@ -97,35 +97,29 @@ const Patent = memo((props) => {
       render: (text, record, index) => `${index + 1}`,
     },
     {
-      title: "专利名称",
-      dataIndex: "applicant",
+      title: "ISSN",
+      dataIndex: "id",
       align: "center",
     },
     {
-      title: "申请人",
+      title: "名称",
       dataIndex: "name",
       align: "center",
     },
     {
-      title: "发表时间",
-      dataIndex: "da",
+      title: "作者",
+      dataIndex: "author",
       align: "center",
     },
     {
-      title: "收录类型",
-      dataIndex: "type",
+      title: "出版社",
+      dataIndex: "press",
       align: "center",
     },
     {
-      title: "是否新申请",
-      dataIndex: "ie",
+      title: "出版日期",
+      dataIndex: "dp",
       align: "center",
-      render: (text, record, index) =>
-        record.ie === "1" ? (
-          <Tag color="green">是</Tag>
-        ) : (
-          <Tag color="red">否</Tag>
-        ),
     },
   ];
   if (isAuthority && !columns.find((item) => item.key === "operation")) {
@@ -167,7 +161,7 @@ const Patent = memo((props) => {
   const menu = (
     <Menu>
       <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="patent" />
+        <DownloadAnchor text={"下载模板"} fileName="monograph" />
       </Menu.Item>
 
       <Menu.Item>
@@ -193,7 +187,7 @@ const Patent = memo((props) => {
       default:
         break;
     }
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getMonographListAction("all", currentPage, pageSize));
   };
 
   // Modal
@@ -221,7 +215,7 @@ const Patent = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      addPatent(formData).then((res) => {
+      addMonograph(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -229,7 +223,7 @@ const Patent = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPatentListAction("all", currentPage, pageSize));
+          dispatch(getMonographListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -254,12 +248,9 @@ const Patent = memo((props) => {
     editModalForm.setFieldsValue({
       id: record["id"],
       name: record["name"],
-      applicant: record["applicant"],
-      da: record["da"],
-      type: record["type"],
-      ie: record["ie"],
-      apc: record["apc"],
-      auc: record["auc"],
+      author: record["author"],
+      press: record["press"],
+      dp: record["dp"],
     });
   };
 
@@ -272,7 +263,7 @@ const Patent = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      changePatentInfo(formData).then((res) => {
+      changeMonographInfo(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -280,7 +271,7 @@ const Patent = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPatentListAction("all", currentPage, pageSize));
+          dispatch(getMonographListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -302,7 +293,7 @@ const Patent = memo((props) => {
 
   // Delete Button
   const popconfirmOnConfirm = (record) => {
-    deletePatent(record).then((res) => {
+    deleteMonograph(record).then((res) => {
       const { data } = res;
       if (data.code === 1200) {
         message.success({
@@ -316,7 +307,7 @@ const Patent = memo((props) => {
         });
       }
     });
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getMonographListAction("all", currentPage, pageSize));
   };
 
   const onChangePagination = (page, pageSize) => {
@@ -352,7 +343,7 @@ const Patent = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={patentList}
+            dataSource={monographList}
             bordered={true}
             rowKey={(record) => record.id}
             pagination={{
@@ -374,7 +365,7 @@ const Patent = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/import?type=patent",
+            action: "api/files/upload/import?type=monograph",
           }}
         />
 
@@ -388,7 +379,7 @@ const Patent = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/cover?type=patent",
+            action: "api/files/upload/cover?type=monograph",
           }}
         />
 
@@ -417,11 +408,11 @@ const Patent = memo((props) => {
             form={addModalForm}
             // validateMessages={validateMessages}
           >
-            {Object.keys(transformWords.patent).map((item) => {
+            {Object.keys(transformWords.monograph).map((item) => {
               return (
                 <Form.Item
                   key={item}
-                  label={transformWords.patent[item]}
+                  label={transformWords.monograph[item]}
                   name={item}
                   rules={formRules(item)}
                 >
@@ -447,12 +438,11 @@ const Patent = memo((props) => {
                 // The items must have name
                 <Form.Item
                   key={item}
-                  label={transformWords.patent[item]}
+                  label={transformWords.monograph[item]}
                   name={item}
-                  style={item === "id" ? { display: "none" } : null}
                   rules={formRules(item)}
                 >
-                  <Input disabled={item === "id"} />
+                  <Input />
                 </Form.Item>
               );
             })}
@@ -463,4 +453,4 @@ const Patent = memo((props) => {
   );
 });
 
-export default Patent;
+export default Monograph;

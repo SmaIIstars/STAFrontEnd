@@ -10,12 +10,11 @@ import {
   Form,
   Popconfirm,
   message,
-  Tag,
 } from "antd";
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { getPatentListAction } from "./store/actionCreatores";
-import { changePatentInfo, deletePatent, addPatent } from "servers/patent";
+import { getSRTAListAction } from "./store/actionCreatores";
+import { changeSRTAInfo, deleteSRTA, addSRTA } from "servers/srta";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -44,12 +43,12 @@ const formRules = (value) => {
   switch (value) {
     case "id":
     case "name":
-    case "applicant":
     case "type":
-    case "da":
-    case "ie":
-    case "apc":
-    case "auc":
+    case "winner":
+    case "rt":
+    case "time":
+    case "it":
+    case "note":
       return [
         {
           required: true,
@@ -60,16 +59,16 @@ const formRules = (value) => {
   }
 };
 
-const Patent = memo((props) => {
+const SRTA = memo((props) => {
   const dispatch = useDispatch();
   // It's a Array
   const [editModalForm] = Form.useForm();
   const [addModalForm] = Form.useForm();
 
-  const { patentList, total } = useSelector((state) => {
+  const { srtaList, total } = useSelector((state) => {
     return {
-      patentList: state.getIn(["patent", "patentList"]),
-      total: state.getIn(["patent", "total"]),
+      srtaList: state.getIn(["srta", "srtaList"]),
+      total: state.getIn(["srta", "total"]),
     };
   }, shallowEqual);
 
@@ -84,7 +83,7 @@ const Patent = memo((props) => {
   const isAuthority = localStorage.getItem("authority") > authority.guest;
 
   useEffect(() => {
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getSRTAListAction("all", currentPage, pageSize));
   }, [dispatch, currentPage, pageSize]);
 
   const columns = [
@@ -97,35 +96,24 @@ const Patent = memo((props) => {
       render: (text, record, index) => `${index + 1}`,
     },
     {
-      title: "专利名称",
-      dataIndex: "applicant",
+      title: "编号",
+      dataIndex: "id",
       align: "center",
     },
     {
-      title: "申请人",
+      title: "获奖名称",
       dataIndex: "name",
       align: "center",
     },
     {
-      title: "发表时间",
-      dataIndex: "da",
+      title: "获奖者",
+      dataIndex: "winner",
       align: "center",
     },
     {
-      title: "收录类型",
-      dataIndex: "type",
+      title: "获奖时间",
+      dataIndex: "time",
       align: "center",
-    },
-    {
-      title: "是否新申请",
-      dataIndex: "ie",
-      align: "center",
-      render: (text, record, index) =>
-        record.ie === "1" ? (
-          <Tag color="green">是</Tag>
-        ) : (
-          <Tag color="red">否</Tag>
-        ),
     },
   ];
   if (isAuthority && !columns.find((item) => item.key === "operation")) {
@@ -167,7 +155,7 @@ const Patent = memo((props) => {
   const menu = (
     <Menu>
       <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="patent" />
+        <DownloadAnchor text={"下载模板"} fileName="srta" />
       </Menu.Item>
 
       <Menu.Item>
@@ -193,7 +181,7 @@ const Patent = memo((props) => {
       default:
         break;
     }
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getSRTAListAction("all", currentPage, pageSize));
   };
 
   // Modal
@@ -221,7 +209,7 @@ const Patent = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      addPatent(formData).then((res) => {
+      addSRTA(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -229,7 +217,7 @@ const Patent = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPatentListAction("all", currentPage, pageSize));
+          dispatch(getSRTAListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -254,12 +242,12 @@ const Patent = memo((props) => {
     editModalForm.setFieldsValue({
       id: record["id"],
       name: record["name"],
-      applicant: record["applicant"],
-      da: record["da"],
       type: record["type"],
-      ie: record["ie"],
-      apc: record["apc"],
-      auc: record["auc"],
+      winner: record["winner"],
+      rt: record["rt"],
+      time: record["time"],
+      it: record["it"],
+      note: record["note"],
     });
   };
 
@@ -272,7 +260,7 @@ const Patent = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      changePatentInfo(formData).then((res) => {
+      changeSRTAInfo(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -280,7 +268,7 @@ const Patent = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPatentListAction("all", currentPage, pageSize));
+          dispatch(getSRTAListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -302,7 +290,7 @@ const Patent = memo((props) => {
 
   // Delete Button
   const popconfirmOnConfirm = (record) => {
-    deletePatent(record).then((res) => {
+    deleteSRTA(record).then((res) => {
       const { data } = res;
       if (data.code === 1200) {
         message.success({
@@ -316,7 +304,7 @@ const Patent = memo((props) => {
         });
       }
     });
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getSRTAListAction("all", currentPage, pageSize));
   };
 
   const onChangePagination = (page, pageSize) => {
@@ -329,7 +317,7 @@ const Patent = memo((props) => {
 
   // JSX
   const HeaderObj = {
-    leftHeader: <TitleWrapper>专利列表</TitleWrapper>,
+    leftHeader: <TitleWrapper>科研和教学获奖列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
     rightHeader: isAuthority ? (
       <DropDownWrapper>
@@ -352,7 +340,7 @@ const Patent = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={patentList}
+            dataSource={srtaList}
             bordered={true}
             rowKey={(record) => record.id}
             pagination={{
@@ -374,7 +362,7 @@ const Patent = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/import?type=patent",
+            action: "api/files/upload/import?type=srta",
           }}
         />
 
@@ -388,7 +376,7 @@ const Patent = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/cover?type=patent",
+            action: "api/files/upload/cover?type=srta",
           }}
         />
 
@@ -417,11 +405,11 @@ const Patent = memo((props) => {
             form={addModalForm}
             // validateMessages={validateMessages}
           >
-            {Object.keys(transformWords.patent).map((item) => {
+            {Object.keys(transformWords.srta).map((item) => {
               return (
                 <Form.Item
                   key={item}
-                  label={transformWords.patent[item]}
+                  label={transformWords.srta[item]}
                   name={item}
                   rules={formRules(item)}
                 >
@@ -447,7 +435,7 @@ const Patent = memo((props) => {
                 // The items must have name
                 <Form.Item
                   key={item}
-                  label={transformWords.patent[item]}
+                  label={transformWords.srta[item]}
                   name={item}
                   style={item === "id" ? { display: "none" } : null}
                   rules={formRules(item)}
@@ -463,4 +451,4 @@ const Patent = memo((props) => {
   );
 });
 
-export default Patent;
+export default SRTA;

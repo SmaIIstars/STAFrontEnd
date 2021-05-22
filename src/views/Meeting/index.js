@@ -10,12 +10,11 @@ import {
   Form,
   Popconfirm,
   message,
-  Tag,
 } from "antd";
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { getPatentListAction } from "./store/actionCreatores";
-import { changePatentInfo, deletePatent, addPatent } from "servers/patent";
+import { getMeetingListAction } from "./store/actionCreatores";
+import { changeMeetingInfo, deleteMeeting, addMeeting } from "servers/meeting";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -44,12 +43,11 @@ const formRules = (value) => {
   switch (value) {
     case "id":
     case "name":
-    case "applicant":
+    case "member":
+    case "time":
+    case "address":
     case "type":
-    case "da":
-    case "ie":
-    case "apc":
-    case "auc":
+    case "note":
       return [
         {
           required: true,
@@ -60,16 +58,16 @@ const formRules = (value) => {
   }
 };
 
-const Patent = memo((props) => {
+const Meeting = memo((props) => {
   const dispatch = useDispatch();
   // It's a Array
   const [editModalForm] = Form.useForm();
   const [addModalForm] = Form.useForm();
 
-  const { patentList, total } = useSelector((state) => {
+  const { meetingList, total } = useSelector((state) => {
     return {
-      patentList: state.getIn(["patent", "patentList"]),
-      total: state.getIn(["patent", "total"]),
+      meetingList: state.getIn(["meeting", "meetingList"]),
+      total: state.getIn(["meeting", "total"]),
     };
   }, shallowEqual);
 
@@ -84,7 +82,7 @@ const Patent = memo((props) => {
   const isAuthority = localStorage.getItem("authority") > authority.guest;
 
   useEffect(() => {
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getMeetingListAction("all", currentPage, pageSize));
   }, [dispatch, currentPage, pageSize]);
 
   const columns = [
@@ -97,35 +95,19 @@ const Patent = memo((props) => {
       render: (text, record, index) => `${index + 1}`,
     },
     {
-      title: "专利名称",
-      dataIndex: "applicant",
-      align: "center",
-    },
-    {
-      title: "申请人",
+      title: "会议名称",
       dataIndex: "name",
       align: "center",
     },
     {
-      title: "发表时间",
-      dataIndex: "da",
+      title: "会议时间",
+      dataIndex: "time",
       align: "center",
     },
     {
-      title: "收录类型",
-      dataIndex: "type",
+      title: "会议地址",
+      dataIndex: "address",
       align: "center",
-    },
-    {
-      title: "是否新申请",
-      dataIndex: "ie",
-      align: "center",
-      render: (text, record, index) =>
-        record.ie === "1" ? (
-          <Tag color="green">是</Tag>
-        ) : (
-          <Tag color="red">否</Tag>
-        ),
     },
   ];
   if (isAuthority && !columns.find((item) => item.key === "operation")) {
@@ -167,7 +149,7 @@ const Patent = memo((props) => {
   const menu = (
     <Menu>
       <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="patent" />
+        <DownloadAnchor text={"下载模板"} fileName="meeting" />
       </Menu.Item>
 
       <Menu.Item>
@@ -193,7 +175,7 @@ const Patent = memo((props) => {
       default:
         break;
     }
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getMeetingListAction("all", currentPage, pageSize));
   };
 
   // Modal
@@ -221,7 +203,7 @@ const Patent = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      addPatent(formData).then((res) => {
+      addMeeting(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -229,7 +211,7 @@ const Patent = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPatentListAction("all", currentPage, pageSize));
+          dispatch(getMeetingListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -254,12 +236,11 @@ const Patent = memo((props) => {
     editModalForm.setFieldsValue({
       id: record["id"],
       name: record["name"],
-      applicant: record["applicant"],
-      da: record["da"],
+      member: record["member"],
+      time: record["time"],
+      address: record["address"],
       type: record["type"],
-      ie: record["ie"],
-      apc: record["apc"],
-      auc: record["auc"],
+      note: record["note"],
     });
   };
 
@@ -272,7 +253,7 @@ const Patent = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      changePatentInfo(formData).then((res) => {
+      changeMeetingInfo(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -280,7 +261,7 @@ const Patent = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPatentListAction("all", currentPage, pageSize));
+          dispatch(getMeetingListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -302,7 +283,7 @@ const Patent = memo((props) => {
 
   // Delete Button
   const popconfirmOnConfirm = (record) => {
-    deletePatent(record).then((res) => {
+    deleteMeeting(record).then((res) => {
       const { data } = res;
       if (data.code === 1200) {
         message.success({
@@ -316,7 +297,7 @@ const Patent = memo((props) => {
         });
       }
     });
-    dispatch(getPatentListAction("all", currentPage, pageSize));
+    dispatch(getMeetingListAction("all", currentPage, pageSize));
   };
 
   const onChangePagination = (page, pageSize) => {
@@ -352,7 +333,7 @@ const Patent = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={patentList}
+            dataSource={meetingList}
             bordered={true}
             rowKey={(record) => record.id}
             pagination={{
@@ -374,7 +355,7 @@ const Patent = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/import?type=patent",
+            action: "api/files/upload/import?type=meeting",
           }}
         />
 
@@ -388,7 +369,7 @@ const Patent = memo((props) => {
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/cover?type=patent",
+            action: "api/files/upload/cover?type=meeting",
           }}
         />
 
@@ -417,11 +398,11 @@ const Patent = memo((props) => {
             form={addModalForm}
             // validateMessages={validateMessages}
           >
-            {Object.keys(transformWords.patent).map((item) => {
+            {Object.keys(transformWords.meeting).map((item) => {
               return (
                 <Form.Item
                   key={item}
-                  label={transformWords.patent[item]}
+                  label={transformWords.meeting[item]}
                   name={item}
                   rules={formRules(item)}
                 >
@@ -447,7 +428,7 @@ const Patent = memo((props) => {
                 // The items must have name
                 <Form.Item
                   key={item}
-                  label={transformWords.patent[item]}
+                  label={transformWords.meeting[item]}
                   name={item}
                   style={item === "id" ? { display: "none" } : null}
                   rules={formRules(item)}
@@ -463,4 +444,4 @@ const Patent = memo((props) => {
   );
 });
 
-export default Patent;
+export default Meeting;

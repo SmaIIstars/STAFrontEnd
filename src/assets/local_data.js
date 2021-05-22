@@ -1,9 +1,12 @@
 import {
   DesktopOutlined,
-  PieChartOutlined,
   FileOutlined,
   TeamOutlined,
   UserOutlined,
+  BulbOutlined,
+  BookOutlined,
+  FileProtectOutlined,
+  CalendarOutlined,
 } from "@ant-design/icons";
 
 export const authority = {
@@ -59,6 +62,21 @@ export const sider_routes = [
     authority: authority.guest,
   },
   {
+    title: "专著",
+    link: "/monograph",
+    authority: authority.guest,
+  },
+  {
+    title: "科研和教学",
+    link: "/srta",
+    authority: authority.guest,
+  },
+  {
+    title: "会议",
+    link: "/meeting",
+    authority: authority.guest,
+  },
+  {
     title: "权限管理",
     link: "/authority",
     authority: authority.superAdmin,
@@ -69,7 +87,10 @@ export const sider_icons = [
   <UserOutlined />,
   <DesktopOutlined />,
   <FileOutlined />,
-  <PieChartOutlined />,
+  <FileProtectOutlined />,
+  <BookOutlined />,
+  <BulbOutlined />,
+  <CalendarOutlined />,
   <TeamOutlined />,
 ];
 
@@ -145,6 +166,35 @@ export const transformWords = {
     ie: "是否新申请",
     apc: "授权国家",
     auc: "申请国家",
+  },
+
+  monograph: {
+    id: "ISSN",
+    name: "著作名称",
+    author: "著作者",
+    press: "出版社名称",
+    dp: "出版日期",
+  },
+
+  srta: {
+    id: "编号",
+    name: "获奖名称",
+    type: "获奖类型",
+    winner: "获奖者",
+    rt: "奖励类别",
+    time: "获奖时间",
+    it: "是否是老师",
+    note: "备注",
+  },
+
+  meeting: {
+    id: "编号",
+    name: "会议名称",
+    member: "成员",
+    time: "时间",
+    address: "会议地址",
+    type: "会议类型",
+    note: "备注",
   },
 };
 

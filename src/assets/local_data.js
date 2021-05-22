@@ -49,6 +49,16 @@ export const sider_routes = [
     authority: authority.guest,
   },
   {
+    title: "论文",
+    link: "/paper",
+    authority: authority.guest,
+  },
+  {
+    title: "专利",
+    link: "/patent",
+    authority: authority.guest,
+  },
+  {
     title: "权限管理",
     link: "/authority",
     authority: authority.superAdmin,
@@ -79,15 +89,6 @@ export const layout_header_dropdown_items = [
 
 // Chinese-English
 export const transformWords = {
-  // personnel
-  personnel: {
-    perid: "学号",
-    name: "名字",
-    degree: "学位",
-    EB: "学历",
-    title: "职称",
-  },
-
   // authority
   authority: {
     email: "邮箱",
@@ -96,9 +97,18 @@ export const transformWords = {
     key: "关键词",
   },
 
+  // personnel
+  personnel: {
+    id: "学号",
+    name: "名字",
+    degree: "学位",
+    EB: "学历",
+    title: "职称",
+  },
+
   // project
   project: {
-    proid: "项目编号",
+    id: "项目编号",
     name: "项目名称",
     year: "年度",
     category: "类别",
@@ -111,17 +121,30 @@ export const transformWords = {
     gu: "拨款单位",
   },
 
+  // paper
   paper: {
-    paperid: "论文编号",
-    papername: "论文名称",
-    paperfa: "第一作者",
-    paperca: "通讯作者",
-    paperpt: "发表时间",
-    paperpn: "发表刊物名称",
-    papervp: "卷号/期号",
-    papersp: "开始页码",
-    paperep: "截止页码",
-    paperct: "收录类型",
+    id: "论文编号",
+    name: "论文名称",
+    fa: "第一作者",
+    ca: "通讯作者",
+    pt: "发表时间",
+    pn: "发表刊物名称",
+    vp: "卷号/期号",
+    sp: "开始页码",
+    ep: "截止页码",
+    ct: "收录类型",
+  },
+
+  // patent
+  patent: {
+    id: "专利编号",
+    name: "申请人",
+    applicant: "专利名称",
+    da: "授权日期",
+    type: "类型",
+    ie: "是否新申请",
+    apc: "授权国家",
+    auc: "申请国家",
   },
 };
 

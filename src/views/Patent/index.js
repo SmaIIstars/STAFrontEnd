@@ -13,12 +13,8 @@ import {
 } from "antd";
 import { DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import { getPersonnelListAction } from "./store/actionCreatores";
-import {
-  changePersonnelInfo,
-  deletePersonnel,
-  addPersonnel,
-} from "servers/personnel";
+import { getPatentListAction } from "./store/actionCreatores";
+import { changePatentInfo, deletePatent, addPatent } from "servers/patent";
 
 import Container from "common/Container";
 import SearchTable from "common/SearchTable";
@@ -45,43 +41,37 @@ const formLayout = {
 
 const formRules = (value) => {
   switch (value) {
-    case "name":
-    case "degree":
-    case "EB":
-    case "title":
-      return [
-        {
-          required: true,
-        },
-      ];
     case "id":
+    case "name":
+    case "applicant":
+    case "type":
+    case "da":
+    case "ie":
+    case "apc":
+    case "auc":
       return [
         {
           required: true,
         },
-        {
-          len: 12,
-          // message: "学号 格式不正确!",
-        },
       ];
-
     default:
       return null;
   }
 };
 
-const Personnel = memo((props) => {
+const Patent = memo((props) => {
   const dispatch = useDispatch();
   // It's a Array
   const [editModalForm] = Form.useForm();
   const [addModalForm] = Form.useForm();
 
-  const { personnelList, total } = useSelector((state) => {
+  const { patentList, total } = useSelector((state) => {
     return {
-      personnelList: state.getIn(["personnel", "personnelList"]),
-      total: state.getIn(["personnel", "total"]),
+      patentList: state.getIn(["patent", "patentList"]),
+      total: state.getIn(["patent", "total"]),
     };
   }, shallowEqual);
+
   const [isImportPage, setIsImportPage] = useState(false);
   const [isCoverPage, setIsCoverPage] = useState(false);
   const [rowData, setRowData] = useState({});
@@ -89,17 +79,11 @@ const Personnel = memo((props) => {
   const [pageSize, setPageSize] = useState(10);
 
   const [isEditModal, setIsEditModal] = useState(false);
-  // const [id, setId] = useState("");
-  // const [name, setName] = useState("");
-  // const [degree, setDegree] = useState("");
-  // const [EB, setEB] = useState("");
-  // const [title, setTitle] = useState("");
-
   const [isAddModal, setIsAddModal] = useState(false);
   const isAuthority = localStorage.getItem("authority") > authority.guest;
 
   useEffect(() => {
-    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+    dispatch(getPatentListAction("all", currentPage, pageSize));
   }, [dispatch, currentPage, pageSize]);
 
   const columns = [
@@ -112,30 +96,31 @@ const Personnel = memo((props) => {
       render: (text, record, index) => `${index + 1}`,
     },
     {
-      title: "姓名",
+      title: "专利名称",
+      dataIndex: "applicant",
+      align: "center",
+    },
+    {
+      title: "申请人",
       dataIndex: "name",
       align: "center",
-      render: (text, record, index) => {
-        return <a href="/">{text}</a>;
-      },
     },
     {
-      title: "学位",
-      dataIndex: "degree",
+      title: "发表时间",
+      dataIndex: "da",
       align: "center",
     },
     {
-      title: "学历",
-      dataIndex: "EB",
+      title: "收录类型",
+      dataIndex: "type",
       align: "center",
     },
     {
-      title: "职称",
-      dataIndex: "title",
+      title: "是否新申请",
+      dataIndex: "ie",
       align: "center",
     },
   ];
-
   if (isAuthority && !columns.find((item) => item.key === "operation")) {
     columns.push({
       title: "操作",
@@ -172,17 +157,10 @@ const Personnel = memo((props) => {
     });
   }
 
-  // const getDataSource = (dataSource) =>
-  //   dataSource
-  //     ? dataSource.map((item) => {
-  //         return Object.assign(item, { key: item.id });
-  //       })
-  //     : null;
-
   const menu = (
     <Menu>
       <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="personnel" />
+        <DownloadAnchor text={"下载模板"} fileName="patent" />
       </Menu.Item>
 
       <Menu.Item>
@@ -208,7 +186,7 @@ const Personnel = memo((props) => {
       default:
         break;
     }
-    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+    dispatch(getPatentListAction("all", currentPage, pageSize));
   };
 
   // Modal
@@ -236,7 +214,7 @@ const Personnel = memo((props) => {
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      addPersonnel(formData).then((res) => {
+      addPatent(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -244,7 +222,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsAddModal(false);
-          dispatch(getPersonnelListAction("all", currentPage, pageSize));
+          dispatch(getPatentListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "新增失败: " + data.message,
@@ -265,19 +243,16 @@ const Personnel = memo((props) => {
     setRowData(record);
     setIsEditModal(true);
 
-    // setId(record["id"]);
-    // setName(record["name"]);
-    // setDegree(record["degree"]);
-    // setEB(record["EB"]);
-    // setTitle(record["title"]);
-
     // The setState is async
     editModalForm.setFieldsValue({
       id: record["id"],
       name: record["name"],
-      degree: record["degree"],
-      EB: record["EB"],
-      title: record["title"],
+      applicant: record["applicant"],
+      da: record["da"],
+      type: record["type"],
+      ie: record["ie"],
+      apc: record["apc"],
+      auc: record["auc"],
     });
   };
 
@@ -286,11 +261,12 @@ const Personnel = memo((props) => {
     let values = Object.values(formData).map((item) =>
       item ? item.trim() : item
     );
+    // console.log(values);
 
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
     ) {
-      changePersonnelInfo(formData).then((res) => {
+      changePatentInfo(formData).then((res) => {
         const { data } = res;
         if (data.code === 1200) {
           message.success({
@@ -298,7 +274,7 @@ const Personnel = memo((props) => {
             duration: 3,
           });
           setIsEditModal(false);
-          dispatch(getPersonnelListAction("all", currentPage, pageSize));
+          dispatch(getPatentListAction("all", currentPage, pageSize));
         } else {
           message.error({
             content: "更新失败: " + data.message,
@@ -318,32 +294,9 @@ const Personnel = memo((props) => {
     setIsEditModal(false);
   };
 
-  // const modalOnChange = (e, key) => {
-  //   let value = e.target.value;
-  //   switch (key) {
-  //     case "id":
-  //       setName(id);
-  //       break;
-  //     case "name":
-  //       setName(value);
-  //       break;
-  //     case "degree":
-  //       setDegree(value);
-  //       break;
-  //     case "EB":
-  //       setEB(value);
-  //       break;
-  //     case "title":
-  //       setTitle(value);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
   // Delete Button
   const popconfirmOnConfirm = (record) => {
-    deletePersonnel(record).then((res) => {
+    deletePatent(record).then((res) => {
       const { data } = res;
       if (data.code === 1200) {
         message.success({
@@ -357,7 +310,7 @@ const Personnel = memo((props) => {
         });
       }
     });
-    dispatch(getPersonnelListAction("all", currentPage, pageSize));
+    dispatch(getPatentListAction("all", currentPage, pageSize));
   };
 
   const onChangePagination = (page, pageSize) => {
@@ -370,7 +323,7 @@ const Personnel = memo((props) => {
 
   // JSX
   const HeaderObj = {
-    leftHeader: <TitleWrapper>人员列表</TitleWrapper>,
+    leftHeader: <TitleWrapper>专利列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
     rightHeader: isAuthority ? (
       <DropDownWrapper>
@@ -393,7 +346,7 @@ const Personnel = memo((props) => {
         <SearchTableWrapper>
           <SearchTable
             columns={columns}
-            dataSource={personnelList}
+            dataSource={patentList}
             bordered={true}
             rowKey={(record) => record.id}
             pagination={{
@@ -412,15 +365,10 @@ const Personnel = memo((props) => {
             isVisible: isImportPage,
             title: "新增数据",
             cancel: () => uploadHandleCancel("import"),
-            // footer: [
-            //   <Button key="back" onClick={() => uploadHandleCancel("import")}>
-            //     取消
-            //   </Button>,
-            // ],
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/import?type=personnel",
+            action: "api/files/upload/import?type=patent",
           }}
         />
 
@@ -431,11 +379,10 @@ const Personnel = memo((props) => {
             cancel: () => {
               uploadHandleCancel("cover");
             },
-            oK: () => {},
           }}
           UploadProps={{
             accept: ".xlsx",
-            action: "api/files/upload/cover?type=personnel",
+            action: "api/files/upload/cover?type=patent",
           }}
         />
 
@@ -464,20 +411,15 @@ const Personnel = memo((props) => {
             form={addModalForm}
             // validateMessages={validateMessages}
           >
-            {Object.keys(transformWords.personnel).map((item) => {
-              // console.log(item);
+            {Object.keys(transformWords.patent).map((item) => {
               return (
                 <Form.Item
                   key={item}
-                  label={transformWords.personnel[item]}
+                  label={transformWords.patent[item]}
                   name={item}
                   rules={formRules(item)}
                 >
-                  <Input
-                  // onChange={(e) => {
-                  //   modalOnChange(e, item);
-                  // }}
-                  />
+                  <Input />
                 </Form.Item>
               );
             })}
@@ -494,11 +436,12 @@ const Personnel = memo((props) => {
         >
           <Form {...formLayout} name={"editModal"} form={editModalForm}>
             {Object.keys(rowData).map((item) => {
+              // console.log(item);
               return (
                 // The items must have name
                 <Form.Item
                   key={item}
-                  label={transformWords.personnel[item]}
+                  label={transformWords.patent[item]}
                   name={item}
                   style={item === "id" ? { display: "none" } : null}
                   rules={formRules(item)}
@@ -514,4 +457,4 @@ const Personnel = memo((props) => {
   );
 });
 
-export default Personnel;
+export default Patent;

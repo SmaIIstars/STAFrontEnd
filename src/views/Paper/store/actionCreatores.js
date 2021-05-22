@@ -3,10 +3,10 @@ import { getPaperList } from "servers/paper";
 import { CHANGE_PAPER_LIST, CHANGE_TOTAL } from "./constants";
 
 // chageActions
-const changeProjectListAction = (res) => {
+const changePaperListAction = (res) => {
   return {
     type: CHANGE_PAPER_LIST,
-    personnelList: res,
+    paperList: res,
   };
 };
 

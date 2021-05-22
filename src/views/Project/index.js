@@ -41,7 +41,7 @@ const formLayout = {
 
 const formRules = (value) => {
   switch (value) {
-    case "proid":
+    case "id":
     case "name":
     case "uu":
     case "header":
@@ -258,11 +258,17 @@ const Project = memo((props) => {
 
     // The setState is async
     editModalForm.setFieldsValue({
-      proid: record["proid"],
+      id: record["id"],
       name: record["name"],
       category: record["category"],
       header: record["header"],
       uu: record["uu"],
+      year: record["year"],
+      member: record["member"],
+      st: record["st"],
+      et: record["et"],
+      pf: record["pf"],
+      gu: record["gu"],
     });
   };
 
@@ -271,7 +277,7 @@ const Project = memo((props) => {
     let values = Object.values(formData).map((item) =>
       item ? item.trim() : item
     );
-    console.log(values);
+    console.log(formData);
 
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
@@ -358,7 +364,7 @@ const Project = memo((props) => {
             columns={columns}
             dataSource={projectList}
             bordered={true}
-            rowKey={(record) => record.proid}
+            rowKey={(record) => record.id}
             pagination={{
               pageSizeOptions: [10, 15, 20],
               pageSize: pageSize,
@@ -451,16 +457,20 @@ const Project = memo((props) => {
         >
           <Form {...formLayout} name={"editModal"} form={editModalForm}>
             {Object.keys(rowData).map((item) => {
+              // console.log(item);
               return (
                 // The items must have name
                 <Form.Item
                   key={item}
                   label={transformWords.project[item]}
                   name={item}
-                  style={item === "proid" ? { display: "none" } : null}
+                  style={item === "id" ? { display: "none" } : null}
                   rules={formRules(item)}
                 >
-                  <Input disabled={item === "proid"} />
+                  <Input
+                    disabled={item === "id"}
+                    defaultValue={rowData[item]}
+                  />
                 </Form.Item>
               );
             })}

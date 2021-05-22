@@ -41,17 +41,16 @@ const formLayout = {
 
 const formRules = (value) => {
   switch (value) {
-    case "proid":
+    case "id":
     case "name":
-    case "uu":
-    case "header":
-    case "category":
-    case "year":
-    case "member":
-    case "st":
-    case "et":
-    case "pf":
-    case "gu":
+    case "fa":
+    case "ca":
+    case "pt":
+    case "pn":
+    case "vp":
+    case "sp":
+    case "ep":
+    case "ct":
       return [
         {
           required: true,
@@ -74,6 +73,7 @@ const Paper = memo((props) => {
       total: state.getIn(["paper", "total"]),
     };
   }, shallowEqual);
+
   const [isImportPage, setIsImportPage] = useState(false);
   const [isCoverPage, setIsCoverPage] = useState(false);
   const [rowData, setRowData] = useState({});
@@ -81,12 +81,6 @@ const Paper = memo((props) => {
   const [pageSize, setPageSize] = useState(10);
 
   const [isEditModal, setIsEditModal] = useState(false);
-  // const [id, setId] = useState("");
-  // const [name, setName] = useState("");
-  // const [degree, setDegree] = useState("");
-  // const [EB, setEB] = useState("");
-  // const [title, setTitle] = useState("");
-
   const [isAddModal, setIsAddModal] = useState(false);
   const isAuthority = localStorage.getItem("authority") > authority.guest;
 
@@ -104,26 +98,23 @@ const Paper = memo((props) => {
       render: (text, record, index) => `${index + 1}`,
     },
     {
-      title: "项目名称",
+      title: "论文名称",
       dataIndex: "name",
       align: "center",
-      // render: (text, record, index) => {
-      //   return <a href="/">{text}</a>;
-      // },
     },
     {
-      title: "类别",
-      dataIndex: "category",
+      title: "第一作者",
+      dataIndex: "fa",
       align: "center",
     },
     {
-      title: "项目负责人",
-      dataIndex: "header",
+      title: "发表时间",
+      dataIndex: "pt",
       align: "center",
     },
     {
-      title: "承担单位",
-      dataIndex: "uu",
+      title: "收录类型",
+      dataIndex: "ct",
       align: "center",
     },
   ];
@@ -163,17 +154,10 @@ const Paper = memo((props) => {
     });
   }
 
-  // const getDataSource = (dataSource) =>
-  //   dataSource
-  //     ? dataSource.map((item) => {
-  //         return Object.assign(item, { key: item.perid });
-  //       })
-  //     : null;
-
   const menu = (
     <Menu>
       <Menu.Item>
-        <DownloadAnchor text={"下载模板"} fileName="project" />
+        <DownloadAnchor text={"下载模板"} fileName="paper" />
       </Menu.Item>
 
       <Menu.Item>
@@ -258,11 +242,16 @@ const Paper = memo((props) => {
 
     // The setState is async
     editModalForm.setFieldsValue({
-      proid: record["proid"],
+      id: record["id"],
       name: record["name"],
-      category: record["category"],
-      header: record["header"],
-      uu: record["uu"],
+      fa: record["fa"],
+      ca: record["ca"],
+      pt: record["pt"],
+      pn: record["pn"],
+      vp: record["vp"],
+      sp: record["sp"],
+      ep: record["ep"],
+      ct: record["ct"],
     });
   };
 
@@ -271,7 +260,7 @@ const Paper = memo((props) => {
     let values = Object.values(formData).map((item) =>
       item ? item.trim() : item
     );
-    console.log(values);
+    // console.log(values);
 
     if (
       values.filter((item) => [undefined, null, ""].includes(item)).length === 0
@@ -333,7 +322,7 @@ const Paper = memo((props) => {
 
   // JSX
   const HeaderObj = {
-    leftHeader: <TitleWrapper>项目列表</TitleWrapper>,
+    leftHeader: <TitleWrapper>论文列表</TitleWrapper>,
     // midHeader: <div>mid</div>,
     rightHeader: isAuthority ? (
       <DropDownWrapper>
@@ -358,7 +347,7 @@ const Paper = memo((props) => {
             columns={columns}
             dataSource={paperList}
             bordered={true}
-            rowKey={(record) => record.proid}
+            rowKey={(record) => record.id}
             pagination={{
               pageSizeOptions: [10, 15, 20],
               pageSize: pageSize,
@@ -422,7 +411,6 @@ const Paper = memo((props) => {
             // validateMessages={validateMessages}
           >
             {Object.keys(transformWords.paper).map((item) => {
-              // console.log(item);
               return (
                 <Form.Item
                   key={item}
@@ -430,11 +418,7 @@ const Paper = memo((props) => {
                   name={item}
                   rules={formRules(item)}
                 >
-                  <Input
-                  // onChange={(e) => {
-                  //   modalOnChange(e, item);
-                  // }}
-                  />
+                  <Input />
                 </Form.Item>
               );
             })}
@@ -451,16 +435,17 @@ const Paper = memo((props) => {
         >
           <Form {...formLayout} name={"editModal"} form={editModalForm}>
             {Object.keys(rowData).map((item) => {
+              // console.log(item);
               return (
                 // The items must have name
                 <Form.Item
                   key={item}
                   label={transformWords.paper[item]}
                   name={item}
-                  style={item === "proid" ? { display: "none" } : null}
+                  style={item === "id" ? { display: "none" } : null}
                   rules={formRules(item)}
                 >
-                  <Input disabled={item === "proid"} />
+                  <Input disabled={item === "id"} />
                 </Form.Item>
               );
             })}

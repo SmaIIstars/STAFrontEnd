@@ -6,7 +6,7 @@ import { CHANGE_PROJECT_LIST, CHANGE_TOTAL } from "./constants";
 const changeProjectListAction = (res) => {
   return {
     type: CHANGE_PROJECT_LIST,
-    personnelList: res,
+    projectList: res,
   };
 };
 

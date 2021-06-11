@@ -319,13 +319,13 @@ const Authority = (props) => {
             {Object.keys(rowData).map((item) => {
               if (item !== "authority") {
                 return (
-                  <Form.Item key={item} label={transformWords[item]}>
+                  <Form.Item key={item} label={transformWords.authority[item]}>
                     {rowData[item]}
                   </Form.Item>
                 );
               } else {
                 return (
-                  <Form.Item key={item} label={transformWords[item]}>
+                  <Form.Item key={item} label={transformWords.authority[item]}>
                     <Select
                       onChange={(newAuthority) => {
                         rowData["authority"] = newAuthority;
